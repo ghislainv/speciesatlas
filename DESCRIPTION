@@ -1,0 +1,13 @@
+Package: speciesatlas
+Type: Package
+Title: Produce a biodiversity atlas of a given area
+Version: 0.9000
+Date: 2018-06-06
+Author: G. Vieilledent, A. Colas
+Maintainer: Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
+Description: For every specie, the atlas gives predictions about present and future distribution, according to climate change.
+License: None
+Imports : rgdal, raster, biomod2, ggplot2, Reol, fields, knitr, xtable,
+        magick, readbitmap, curl, htm2txt, dplyr, taxize, foreach,
+        doParallel, parallel, compiler, bookdown, kableExtra, sp
+

@@ -1,0 +1,78 @@
+---
+title: "`r params$title`"
+author: "`r params$author`"
+date: "`r params$date`"
+fontsize: 12pt
+output:
+  bookdown::gitbook:
+    number_sections: no
+    css: style.css
+    split_by: section  
+    config:
+      toc:
+        collapse: section
+        scroll_highlight: yes
+        before: null
+        after: null
+      toolbar:
+        position: fixed
+      edit: null
+      download: ["pdf"]
+      search: yes
+      fontsettings:
+        theme: white
+        family: sans
+        size: 2
+      sharing:
+        facebook: yes
+        twitter: yes
+        google: no
+        linkedin: no
+        weibo: no
+        instapper: no
+        vk: no
+        all: ['facebook', 'google', 'twitter', 'linkedin', 'weibo', 'instapaper']  
+  bookdown::pdf_document2:
+    citation_package: natbib
+    fig_caption: yes
+    keep_tex: no
+    latex_engine: pdflatex
+    number_sections: no
+    toc: no
+    includes:
+      in_header: header.tex
+      before_body: doc_prefix.tex
+bibliography: biblio.bib
+biblio-style: jae.bst
+link-citations: yes
+csl: journal-of-applied-ecology.csl
+description: "This is an atlas of the biodiversity in Madagascar."
+---
+
+# Introduction
+
+\newpage
+
+```{r echo=FALSE, results='asis'}
+atlas <- NULL
+sp <- 1
+name <- taxon.names[sp]
+atlas <- c(atlas,knit_child("taxon.Rmkd", quiet=TRUE))
+for (i in wSp) {
+  spdir <- sp.dir[i]
+  if(i>1){
+    if(taxon.sp[i]!=taxon.sp[i-1]){
+      sp <- sp+1
+      name <- taxon.names[sp]
+      atlas <- c(atlas,knit_child("taxon.Rmkd", quiet=TRUE))
+    }
+  }
+  if(enough[[i]][1]){
+    atlas <- c(atlas,knit_child("atlas.sp.Rmkd", quiet=TRUE))
+  } else  {
+    atlas <- c(atlas,knit_child("atlas.sp.not.enough.Rmkd", quiet=TRUE))
+  }
+}
+```
+
+`r paste(atlas, collapse='\n')`

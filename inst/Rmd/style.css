@@ -1,0 +1,60 @@
+p.caption {
+  color: #777;
+  margin-top: 10px;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+}
+pre code {
+  white-space: inherit;
+}
+.regular{
+  float: left;
+  width: 100%;
+  text-align: justify;
+}
+.text{
+  float: left;
+  width: 75%;
+  text-align: justify;
+}
+.imgcurrent{
+  float: left;
+  width: 50%;
+  text-align: left;
+}
+.img{
+  float: left;
+  width: 25%;
+  text-align: left;
+}
+.textcurrent1{
+  float: left;
+  width: 50%;
+  text-align: justify;
+}
+.textcurrent2{
+  float: left;
+  width: 40%;
+  text-align: justify;
+}
+.tablecurrent{
+  float: left;
+  width: 60%;
+  text-align: center;
+}
+.imgniche{
+  float: left;
+  width: 40%;
+  text-align: left;
+  
+}
+.tableniche{
+  float: left;
+  width: 60%;
+  text-align: center;
+}

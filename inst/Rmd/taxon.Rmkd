@@ -1,0 +1,6 @@
+# `r paste(toupper(substr(name, 1, 1)), substr(name, 2, nchar(name)), sep="")` {-}
+
+
+<div class="regular">
+-------------
+</div>
