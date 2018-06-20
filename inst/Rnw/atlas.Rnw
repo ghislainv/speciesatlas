@@ -1,0 +1,93 @@
+%!/usr/bin/Rscript
+
+% ==============================================================================
+% authors         :Ghislain Vieilledent, Aurélien Colas
+% email           :ghislain.vieilledent@cirad.fr, aurelien.colas@insa-lyon.fr
+% license         :GPLv3
+% ==============================================================================
+
+\documentclass[12pt, leqno]{article}
+\usepackage[a4paper]{geometry}
+%% \pagenumbering{arabic} %% Choose how to number the pages
+%% For fonts
+\usepackage[scaled=0.92]{helvet}
+\newenvironment{helvetfont}{\fontfamily{phv}\selectfont}{\par}
+%%
+\usepackage{graphicx}
+\usepackage[round,sort]{natbib}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\setcounter{secnumdepth}{4}
+\usepackage[colorlinks=true,citecolor=blue]{hyperref} %% Hyperlinks
+\usepackage{longtable}
+\setlength{\LTleft}{-5cm plus 1 fill}
+\setlength{\LTright}{-5cm plus 1 fill}
+\usepackage{booktabs}
+\newcommand{\logit}{\text{logit}}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+\newcommand{\p}{\text{p}}
+% For changes in tables
+\newcommand{\sizeBigTable}{\fontsize{9pt}{9pt}\selectfont}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+% Customizing tables
+\usepackage{booktabs}
+\usepackage{colortbl, xcolor}
+% Invisible section
+\newcommand\invisiblesection[1]{%
+  \refstepcounter{section}%
+  \addcontentsline{toc}{section}{\protect\numberline{\thesection}#1}%
+  \sectionmark{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Document %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%%==============================
+%% Table of content
+%%==============================
+
+\tableofcontents
+\newpage
+
+%%==============================
+%% Knit and import atlas.sp.Rnw
+%%==============================
+
+%% Change geometry
+\newgeometry{left=1cm,right=1cm,top=0.75cm,bottom=1.5cm}
+
+%% Change font
+\begin{helvetfont}
+
+<<spknit>>=
+atlas <- NULL
+sp <- 1
+name <- taxon.names[sp]
+for (i in wSp) {
+  spdir <- sp.dir[i]
+  if(i>1){
+    if(taxon.sp[i]!=taxon.sp[i-1]){
+      sp <- sp+1
+      name <- taxon.names[sp]
+    }
+  }
+  if(enough[[i]][1]){
+    atlas <- c(atlas,knit_child("atlas.sp.Rnw", quiet=TRUE))
+  } else  {
+    atlas <- c(atlas,knit_child("atlas.sp.not.enough.Rnw", quiet=TRUE))
+  }
+}
+@
+
+<<atlasprint, results="asis">>=
+cat(paste(atlas,collapse="\n\n\\newpage\n"))
+@
+
+\end{helvetfont}
+
+\end{document}

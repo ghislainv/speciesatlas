@@ -6,7 +6,7 @@
 # license         :GPLv3
 # ==============================================================================
 
-fun.main <- function(df.orig,run.models,run.plots,run.taxo,environ,future,fut.var,maxent.path,n.core,title.book,author.book){
+fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="both",title.book="Title",author.book="Author"){
 
   # =======================
   # API Keys
@@ -33,12 +33,10 @@ fun.main <- function(df.orig,run.models,run.plots,run.taxo,environ,future,fut.va
 
   ## For MAXENT.Phillips with JAVA to work on RStudio server
   Sys.unsetenv("DISPLAY")
-  ## Use bytecode compilation
-  fun.species.bytes <- cmpfun(fun.species)
   ## Package names for parallel computations
-  pkg.names.clust <- c("rgdal","raster","biomod2","ggplot2","Reol","fields","knitr",
+  pkg.names.clust <- c("rgdal","raster","biomod2","ggplot2","Reol","knitr","grid",
                        "xtable","magick","readbitmap","curl","htm2txt","dplyr","taxize",
-                       "foreach","doParallel","parallel","compiler","bookdown","kableExtra","sp")
+                       "foreach","doParallel","parallel","bookdown","sp")
 
   ## Make a cluster with all possible cores
   if(n.core>detectCores()){n.core <- detectCores()-1}
@@ -48,10 +46,16 @@ fun.main <- function(df.orig,run.models,run.plots,run.taxo,environ,future,fut.va
   ## Return number of parallel workers
   getDoParWorkers()
   enough <- vector() ## Retain if there is enough observations
-  enough <- foreach(i=1:length(taxon.sp),.packages=pkg.names.clust) %dopar% fun.species.bytes(i,run.models,run.plots,run.taxo,environ,future,fut.var,maxent.path,taxon.sp,taxon.names,sp.dir,sp.names,df.sp)
+  enough <- foreach(i=1:length(taxon.sp),.packages=pkg.names.clust) %dopar% fun.species(i,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,out.type,taxon.sp,taxon.names,sp.dir,sp.names,df.sp)
   ## Stop the cluster
   stopCluster(clust)
   setwd("..")
 
-  fun.book(sp.dir,taxon.names,taxon.sp,enough)
+  if((out.type=="html")||(out.type=="both")){
+    fun.book(sp.dir,taxon.names,taxon.sp,enough)
+  }
+  if((out.type=="pdf")||(out.type=="both")){
+    fun.pdf(sp.dir,taxon.names,taxon.sp,enough)
+  }
+
 }

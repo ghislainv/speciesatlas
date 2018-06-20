@@ -32,11 +32,9 @@ fun.data <- function(df.orig){
     n.species <- c(n.species,length(levels(as.factor(df.sp[[sp]]$Species))))
     taxon.sp <- c(taxon.sp,rep(sp,n.species[sp]))
     taxon.names <- c(taxon.names,df.orig[[sp]]$Taxo.group)
-
     ## Figures directory
     dir.create(paste0("figures/",taxon.names[sp]),recursive=TRUE,showWarnings=FALSE)
   }
-
   dir.create("BIOMOD",recursive=TRUE,showWarnings=FALSE)
   setwd("BIOMOD")
   return(list(df.sp,sp.names,sp.dir,taxon.sp,taxon.names))

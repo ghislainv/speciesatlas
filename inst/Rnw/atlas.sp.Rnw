@@ -1,0 +1,165 @@
+%!/usr/bin/Rscript
+
+% ==============================================================================
+% authors         :Ghislain Vieilledent, Aurélien Colas
+% email           :ghislain.vieilledent@cirad.fr, aurelien.colas@insa-lyon.fr
+% license         :GPLv3
+% ==============================================================================
+
+%%=========================
+%% Load objects for species
+<<>>=
+path <- paste(user.path,"figures",name,spdir,sep="/")
+load(paste(path,"plotting.rda",sep="/"))
+load(paste(path,"taxonomy.rda",sep="/"))
+@
+
+%%===========================
+%% Species name and authority
+
+%% Section
+\invisiblesection{\textit{\Sexpr{tax.data$binomial}}}
+
+%% Title and subtitle
+<<>>=
+authority <- gsub("&","\\\\&",tax.data$authority)
+authority <- ifelse(is.na(authority),"",paste0(authority,", "))
+iucn_status <- ifelse(is.na(tax.data$iucn),"--",tax.data$iucn)
+@
+\begin{center}
+{\LARGE \textit{\Sexpr{tax.data$binomial}}}\\
+\Sexpr{authority}\Sexpr{tax.data$kingdom}, \Sexpr{tax.data$family}, \Sexpr{iucn_status}
+\end{center}
+
+%%==================
+%% Photo and summary
+
+\begin{minipage}{0.25\textwidth}
+\centering \includegraphics[width=3.5cm]{\Sexpr{paste(path,"image_square.jpg",sep="/")}}
+\end{minipage}\hfill
+\begin{minipage}{0.70\textwidth}
+\scriptsize{
+<<results="asis">>=
+cat(text.cut)
+@
+}
+\end{minipage}
+
+%%=====================
+%% Current distribution
+
+\vspace{0.45cm}
+{\large \textbf{Current distribution}}
+\vspace{0.20cm}
+
+\begin{minipage}{0.50\textwidth}
+\begin{tabular}{cc}
+\includegraphics[width=4cm]{\Sexpr{paste(path,"presence_alt.pdf",sep="/")}} &
+\includegraphics[width=4cm]{\Sexpr{paste(path,"ca_current.pdf",sep="/")}} \\
+\end{tabular}
+\end{minipage}%
+\begin{minipage}{0.45\textwidth}
+\small{\textbf{Number of km$^2$ with at least one presence}}\hfill
+
+\vspace{0.20cm}
+
+\footnotesize{NPIX $=$ \Sexpr{npix}}\hfill
+
+\vspace{0.45cm}
+
+\small{\textbf{Species distribution area}}\hfill
+
+\vspace{0.20cm}
+
+\footnotesize{SDA $=$ \Sexpr{SDA.fut[1,1]} km$^2$}\hfill
+
+\vspace{0.45cm}
+
+\small{\textbf{Model performance}}\hfill
+
+\vspace{0.20cm}
+
+\footnotesize{
+<<results="asis">>=
+rownames(Perf.ca) <- c("Value")
+rws <- 1
+col <- "\\rowcolor[gray]{0.95}"
+print.xtable(xtable(Perf.ca,digits=2,align=c("c","c","c","c","c","c","c")),
+             booktabs=TRUE,
+             add.to.row=list(pos=as.list(rws),command=col),
+             floating=FALSE)
+@
+}
+\end{minipage}
+
+%%===============
+%% Climatic niche
+
+\vspace{0.35cm}
+{\large \textbf{Climatic niche}}
+\vspace{0.15cm}
+
+\begin{minipage}{0.35\textwidth}
+\includegraphics[width=5.5cm]{\Sexpr{paste(path,"map-mat.pdf",sep="/")}}
+\end{minipage}\hfill
+\begin{minipage}{0.55\textwidth}
+\small{\textbf{Climatic and altitudinal range}}\hfill
+\vspace{0.20cm}
+\footnotesize{
+<<results="asis">>=
+rws <- seq(0,nrow(niche),by=2)
+col <- rep("\\rowcolor[gray]{0.95}",length(rws))
+print.xtable(xtable(niche,digits=0,align=c("l","r","r","r","r","r")),
+             booktabs=TRUE,
+             add.to.row=list(pos=as.list(rws),command=col),
+             floating=FALSE)
+@
+}
+\vspace{0.45cm}
+\small{\textbf{Variable importance}}\hfill
+\vspace{0.20cm}
+\footnotesize{
+<<results="asis">>=
+names(VarImp) <- c("GLM","GAM","RF","MaxE","ANN","mrank","rank")
+rws <- c(1,3)
+col <- rep("\\rowcolor[gray]{0.95}",2)
+print.xtable(xtable(VarImp,align=c("l","r","r","r","r","r","r","r")),
+             booktabs=TRUE,
+             add.to.row=list(pos=as.list(rws),command=col),
+             floating=FALSE)
+@
+}
+\end{minipage}
+
+%%================================
+%% Vulnerability to climate change
+
+\vspace{0.45cm}
+{\large \textbf{Vulnerability to climate change}}
+\vspace{0.20cm}
+
+\begin{minipage}{0.45\textwidth}
+\begin{tabular}{cc}
+\footnotesize{Full dispersal} & \footnotesize{Zero dispersal} \\
+\includegraphics[width=4cm]{\Sexpr{paste(path,"cafd_85_2080.pdf",sep="/")}} &
+\includegraphics[width=4cm]{\Sexpr{paste(path,"cazd_85_2080.pdf",sep="/")}} \\
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}{0.45\textwidth}
+\small{\textbf{Scenarios}}\hfill
+
+\vspace{0.20cm}
+
+\footnotesize{
+<<results="asis">>=
+names(SDA.fut) <- c("Area","RCP","Year","Disp","Area","Change")
+df <- SDA.fut[,-c(1)]
+rws <- seq(1,(nrow(df)-1),by=2)
+col <- rep("\\rowcolor[gray]{0.95}", length(rws))
+print.xtable(xtable(df,align=c("r","r","r","r","r","r"),digits=0),
+             floating=FALSE,hline.after=c(-1,0,4,nrow(df)),
+             booktabs=TRUE,
+             add.to.row=list(pos=as.list(rws),command=col))
+@
+}
+\end{minipage}

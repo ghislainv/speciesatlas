@@ -5,7 +5,7 @@ load(paste(path,"taxonomy.rda",sep="/"))
 ```
 
 ```{r echo=FALSE, results='asis'}
-authority <- gsub("&","\\\\&",tax.data$authority) 
+authority <- gsub("&","\\\\&",tax.data$authority)
 authority <- ifelse(is.na(authority),"",paste0(authority,", "))
 iucn_status <- ifelse(is.na(tax.data$iucn),"--",tax.data$iucn)
 ```
@@ -30,23 +30,23 @@ include_graphics(paste(path,"image_square.jpg",sep="/"))
 </div>
 
 <div class="imgcurrent">
-```{r echo=FALSE, results='asis', out.height="430"}
+```{r echo=FALSE, results='asis'}
 include_graphics(paste(path,"presence_alt.png",sep="/"))
 ```
 </div>
 <div class="imgcurrent">
-```{r echo=FALSE, results='asis', out.height="430"}
+```{r echo=FALSE, results='asis'}
 include_graphics(paste(path,"ca_current.png",sep="/"))
 ```
 </div>
 <div class="textcurrent2">
-**Number of km$^2$ with one presence** 
+**Number of km$^2$ with one presence**
 
 &nbsp;
-NPIX = `r npix` 
+NPIX = `r npix`
 
 &nbsp;
-**Species distribution area** 
+**Species distribution area**
 
 &nbsp;
 SDA = `r SDA.fut[1,1]` km$^2$
@@ -56,7 +56,7 @@ SDA = `r SDA.fut[1,1]` km$^2$
 <div class="tablecurrent">
 
 &nbsp;
-**Model performance** 
+**Model performance**
 ```{r echo=FALSE, results='asis', out.width = "95%"}
 rownames(Perf.ca) <- c("Value")
 print(xtable(Perf.ca,digits=2,align=c("l","l","l","l","l","l","l")), type="html")
@@ -70,7 +70,7 @@ print(xtable(Perf.ca,digits=2,align=c("l","l","l","l","l","l","l")), type="html"
 </div>
 
 <div class="imgniche">
-```{r echo=FALSE, results='asis', out.height="280"}
+```{r echo=FALSE, results='asis'}
 include_graphics(paste(path,"map-mat.png",sep="/"))
 ```
 </div>
@@ -80,12 +80,12 @@ include_graphics(paste(path,"map-mat.png",sep="/"))
 
 &nbsp;
 ```{r echo=FALSE, results='asis'}
-print(xtable(niche,digits=0,align=c("l","l","l","l","l","l")), type="html")
+print(xtable(niche,digits=0,align=rep("l",length(niche)+1)), type="html")
 ```
 </div>
 
 <div class="regular">
-**Variable importance** 
+**Variable importance**
 ```{r echo=FALSE, results='asis'}
 names(VarImp) <- c("GLM","GAM","RF","MaxE","ANN","mrank","rank")
 print(xtable(VarImp,align=c("l","l","l","l","l","l","l","l")), type="html")
@@ -99,24 +99,30 @@ print(xtable(VarImp,align=c("l","l","l","l","l","l","l","l")), type="html")
 </div>
 
 <div class="imgcurrent">
-**Full dispersal** 
+**Full dispersal**
 
 &nbsp;
-```{r echo=FALSE, results='asis', out.height="430"}
+RCP : `r max(fut.var[[2]])`, Year : `r max(fut.var[[3]])`
+
+&nbsp;
+```{r echo=FALSE, results='asis'}
 include_graphics(paste(path,"/cafd_",max(fut.var[[2]]),"_",max(fut.var[[3]]),".png",sep=""))
 ```
 </div>
 <div class="imgcurrent">
-**Zero dispersal** 
+**Zero dispersal**
 
 &nbsp;
-```{r echo=FALSE, results='asis', out.height="430"}
+RCP : `r max(fut.var[[2]])`, Year : `r max(fut.var[[3]])`
+
+&nbsp;
+```{r echo=FALSE, results='asis'}
 include_graphics(paste(path,"/cazd_",max(fut.var[[2]]),"_",max(fut.var[[3]]),".png",sep=""))
 ```
 </div>
 
 <div class="regular">
-**Scenarios** 
+**Scenarios**
 ```{r echo=FALSE, results='asis'}
 names(SDA.fut) <- c("Area","RCP","Year","Disp","Area","Change")
 df <- SDA.fut[,-c(1)]

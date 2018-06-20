@@ -1,0 +1,68 @@
+%!/usr/bin/Rscript
+
+% ==============================================================================
+  % authors         :Ghislain Vieilledent, Aurélien Colas
+% email           :ghislain.vieilledent@cirad.fr, aurelien.colas@insa-lyon.fr
+% license         :GPLv3
+% ==============================================================================
+
+%%=========================
+%% Load objects for species
+<<>>=
+path <- paste(user.path,"figures",name,spdir,sep="/")
+load(paste(path,"data.rda",sep="/"))
+@
+
+%%===========================
+%% Species name and authority
+
+%% Section
+\invisiblesection{\textit{\Sexpr{tax.data$binomial}}}
+
+%% Title and subtitle
+<<>>=
+authority <- gsub("&","\\\\&",tax.data$authority)
+authority <- ifelse(is.na(authority),"",paste0(authority,", "))
+iucn_status <- ifelse(is.na(tax.data$iucn),"--",tax.data$iucn)
+@
+\begin{center}
+{\LARGE \textit{\Sexpr{tax.data$binomial}}}\\
+\Sexpr{authority}\Sexpr{tax.data$kingdom}, \Sexpr{tax.data$family}, \Sexpr{iucn_status}
+\end{center}
+
+%%==================
+%% Photo and summary
+
+\begin{minipage}{0.25\textwidth}
+\centering \includegraphics[width=3.5cm]{\Sexpr{paste(path,"image_square.jpg",sep="/")}}
+\end{minipage}\hfill
+\begin{minipage}{0.70\textwidth}
+\scriptsize{
+<<results="asis">>=
+cat(text.cut)
+@
+}
+\end{minipage}
+
+%%=====================
+%% Current distribution
+
+\vspace{0.45cm}
+{\large \textbf{Current distribution}}
+\vspace{0.20cm}
+
+\begin{minipage}{0.30\textwidth}
+\includegraphics[width=4cm]{\Sexpr{paste(path,"presence_alt.pdf",sep="/")}}\\
+\end{minipage}%
+\begin{minipage}{0.65\textwidth}
+\small{\textbf{Number of km$^2$ with at least one presence}}\hfill
+
+\vspace{0.20cm}
+
+\footnotesize{NPIX $=$ \Sexpr{npix}}\hfill
+
+\vspace{0.45cm}
+
+The number of observations for this specie was unfortunately too low to run our models. It requires at least 10 individuals to obtain meaningfull results with the models.
+
+\end{minipage}

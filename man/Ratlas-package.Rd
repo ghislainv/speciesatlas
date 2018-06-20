@@ -12,9 +12,9 @@ To use this package, you must have :
 
 - a list of dataFrames containing your data. Each dataFrame stands for a taxon and must contains at least these columns with the exact same names : "Species" (name of the specie), "Long" (Longitude), "Lat" (Latitude) and "Taxo.group" (name of the taxon).
 
-- a RasterStack containing environmental data about the area you want to study. It has to contain an "alt" column, and 4 others columns with parameters you want to run the study.
+- a RasterStack containing environmental data about the area you want to study. It has to contain an "alt" column, and the other columns are different parameters. You decide which ones you want to consider runing the models.
 
-- a list of RasterStacks with environmental datas about the future, according to several climate scenarios. In this order, your list must contain the different years, afterthat the different rcp scenarios and finally the different climate models. Every RasterStack must contain the same variables as the RasterStack for the present.
+- a list of RasterStacks with environmental datas about the future, according to several climate scenarios. For example if you have 2 years, 2 rcp scenarios and 3 climate models, your object will be a list of 4 list with 3 rasters in each.
 
 - your API Keys in an .Renviron file at the root of your computer. More informations at \url{https://ropensci.github.io/taxize-book/authentication.html}
 
@@ -39,5 +39,5 @@ Vieilledent G., M. Muniz-Tagliari, C. Grinand, F. Montfort. Atlas of the biodive
 \url{https://github.com/ghislainv/atlas}
 }
 \examples{
-fun.main(df.orig,run.models,run.plots,run.taxo,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
+fun.main(df.orig,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
 }

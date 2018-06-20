@@ -10,7 +10,7 @@
 # Modelling
 # ==================
 
-fun.models.run <- function(name,spdir,p,s,spname,future,fut.var,maxent.path){
+fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent.path){
 
   ## BIOMOD_FormatingData
   set.seed(1234) ## Reproducible pseudo-absences
@@ -93,13 +93,13 @@ fun.models.run <- function(name,spdir,p,s,spname,future,fut.var,maxent.path){
 
   i.mod <- 1
 
-  for (mc in 1:length(fut.var[[1]])) {
-    for (j in 1:length(fut.var[[2]])) {
-      for (l in 1:length(fut.var[[3]])) {
-
+  for (j in 1:length(fut.var[[2]])) {
+    for (l in 1:length(fut.var[[3]])) {
+      for (mc in 1:length(fut.var[[1]])) {
+        wf <- which(names(future[[i.mod]][[mc]]) %in% model.var)
         ## Projections by model
         BiomodProjFuture <- BIOMOD_Projection(modeling.output=BiomodModel,
-                                              new.env=future[[i.mod]],
+                                              new.env=future[[i.mod]][[mc]][wf],
                                               proj.name=paste0(fut.var[[1]][mc],"_",fut.var[[2]][j],"_",fut.var[[3]][l]),
                                               selected.models=grep("_Full_",
                                                                    get_built_models(BiomodModel),
@@ -119,9 +119,8 @@ fun.models.run <- function(name,spdir,p,s,spname,future,fut.var,maxent.path){
                                                       filtered.meth=c("TSS"),
                                                       compress=TRUE,
                                                       on_0_1000=TRUE)
-        i.mod <- i.mod+1
-
       }
+      i.mod <- i.mod+1
     }
   }
 

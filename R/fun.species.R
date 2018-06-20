@@ -10,7 +10,7 @@
 # Main function
 # ==================
 
-fun.species <- function(i,run.models,run.plots,run.taxo,environ,future,fut.var,maxent.path,taxon.sp,taxon.names,sp.dir,sp.names,df.sp){
+fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,out.type,taxon.sp,taxon.names,sp.dir,sp.names,df.sp){
 
   ## Simplifications
   sp <- taxon.sp[i]
@@ -22,7 +22,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,environ,future,fut.var,m
   ##=======================
   ## Environmental data
 
-  ws <- which(names(environ) != c("alt"))
+  ws <- which(names(environ) %in% model.var)
   s <- stack(environ[[ws]])
 
   ##===============================
@@ -80,7 +80,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,environ,future,fut.var,m
     dir.create(spdir,recursive=TRUE,showWarnings=FALSE)
 
     if(run.models){
-      Biomod=fun.models.run(name,spdir,p,s,spname,future,fut.var,maxent.path)
+      Biomod=fun.models.run(name,spdir,p,s,spname,model.var,future,fut.var,maxent.path)
     } else {
       Biomod=fun.models.no.run(name,spdir)
     }
@@ -91,7 +91,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,environ,future,fut.var,m
 
   if (run.plots) {
 
-    fun.plot(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biomod[[1]],Biomod[[2]],fut.var,npix,environ,s)
+    fun.plot(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biomod[[1]],Biomod[[2]],fut.var,npix,environ,s,out.type)
 
   }
 

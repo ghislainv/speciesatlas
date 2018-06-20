@@ -8,7 +8,7 @@ This function can be called to make a biodiversity atlas of a given area.
 }
 
 \usage{
-fun.main(df.orig,run.models,run.plots,run.taxo,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
+fun.main(df.orig,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
 }
 
 \arguments{
@@ -24,13 +24,17 @@ Indicate if you want the plots part to be run or not.
   \item{run.taxo}{
 Indicate if you want the taxonomy part to be run or not.
 }
+  \item{model.var}{
+Contains the parameters you want to run the study with.
+}
   \item{environ}{
-RasterStack containing environmental data about the area you want to study. It has to contain an "alt" column, and 4 others columns with parameters you want to run the study.
+RasterStack containing environmental data about the area you want to study. It has to contain an "alt" column, and the other columns are different parameters.
 }
   \item{future}{
-List of RasterStacks with environmental datas about the future, according to several climate scenarios.The different years must be put first, afterthat the different rcp scenarios and eventually the different climate models. Every RasterStack must contain the same variables as the RasterStack for the present.
+List of RasterStacks with environmental datas about the future, according to several climate scenarios.For example if you have 2 years, 2 rcp scenarios and 3 climate models, your object will be a list of 4 list with 3 rasters in each.
 
 Exemple of future list :
+
 future <- list("cc_45_2050","cc_45_2080","cc_85_2050","cc_85_2080","he_45_2050","he_45_2080","he_85_2050","he_85_2080")
 }
   \item{fut.var}{
@@ -87,21 +91,22 @@ run.models <- FALSE
 run.plots <- TRUE
 run.taxo <- TRUE
 df.orig <- list(read.csv(file="data/lemurs.txt",header=TRUE),read.csv(file="data/baobabs.txt",header=TRUE))
+
+model.var <-  c("temp","tseas","prec","cwd")
 environ <- stack("data/rasters/environ.tif")
 
 fut.var <- list(c("cc","he","gs"),c("45","85"),c("2050","2080"))
 future <- vector("list")
 i.mod <- 1
 
-for (mc in 1:length(fut.var[[1]])) {
-  for (j in 1:length(fut.var[[2]])) {
-    for (l in 1:length(fut.var[[3]])) {
-
+for (j in 1:length(fut.var[[2]])) { #rcp
+  for (l in 1:length(fut.var[[3]])) { #yr
+    future[[i.mod]] <- vector("list")
+    for (mc in 1:length(fut.var[[1]])) { #mod
       ## Load climatic data
-      future[[i.mod]] <- stack(paste0("data/rasters/",fut.var[[1]][mc],"_",fut.var[[2]][j],"_",fut.var[[3]][l],".tif"))
-      i.mod <- i.mod+1
-
+      future[[i.mod]][[mc]] <- stack(paste0("data/rasters/",fut.var[[1]][mc],"_",fut.var[[2]][j],"_",fut.var[[3]][l],".tif"))
     }
+    i.mod <- i.mod+1
   }
 }
 
