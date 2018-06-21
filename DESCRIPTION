@@ -7,7 +7,7 @@ Author: G. Vieilledent, A. Colas
 Maintainer: Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
 Description: For every specie, the atlas gives predictions about present and future distribution, according to climate change.
 License: None
-Imports: rgdal, raster, biomod2, ggplot2, Reol, knitr, xtable,
+Imports: rgdal, raster, biomod2, ggplot2, knitr, xtable,
         magick, readbitmap, curl, htm2txt, dplyr, taxize, foreach,
         doParallel, parallel, bookdown, sp, grid
 Encoding: UTF-8 
