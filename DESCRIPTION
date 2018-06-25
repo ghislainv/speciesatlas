@@ -3,7 +3,7 @@ Type: Package
 Title: Produce a biodiversity atlas of a given area
 Version: 0.1
 Date: 2018-06-06
-Author: Ghislain Vieilledent, Aurélien Colas
+Author: Ghislain Vieilledent, Aurelien Colas
 Maintainer: Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
 Description: For every specie, the atlas gives predictions about present and future distribution, according to climate change.
 License: GPLv3 + file LICENSE
@@ -19,11 +19,11 @@ Imports:
   curl,
   htm2txt,
   dplyr,
-  taxize (>=0.9.3),
+  taxize,
   foreach,
   doParallel,
   parallel,
   bookdown,
   sp,
   grid
-Encoding: UTF-8 
+

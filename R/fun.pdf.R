@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 
 # ==============================================================================
-# authors         :Ghislain Vieilledent, Aurélien Colas
+# authors         :Ghislain Vieilledent, Aurelien Colas
 # email           :ghislain.vieilledent@cirad.fr, aurelien.colas@insa-lyon.fr
 # license         :GPLv3
 # ==============================================================================
@@ -12,8 +12,7 @@
 
 fun.pdf <- function(sp.dir,taxon.names,taxon.sp,enough){
 
-  wSp <- 1:10
-  #length(taxon.sp)
+  wSp <- 1:length(taxon.sp)
   ## Set knitr chunk default options
   opts_chunk$set(echo=FALSE, cache=FALSE,
                  results="hide", warning=FALSE,

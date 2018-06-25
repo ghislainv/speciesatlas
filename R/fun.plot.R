@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 
 # ==============================================================================
-# authors         :Ghislain Vieilledent, Aurélien Colas
+# authors         :Ghislain Vieilledent, Aurelien Colas
 # email           :ghislain.vieilledent@cirad.fr, aurelien.colas@insa-lyon.fr
 # license         :GPLv3
 # ==============================================================================
@@ -103,7 +103,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     map.mat <- ggplot(mapmat.df, aes(x=prec, y=temp)) + xlim(250,3000) + ylim(150,280) +
       geom_density2d(data=Abs.df,col=grey(0.5)) +
       geom_point(data=mapmat.df,col="darkgreen",alpha=1/3) +
-      labs(x="Annual precipitation (mm.y-1)",y="Mean annual temp. (°C x 10)",size=4) +
+      labs(x="Annual precipitation (mm.y-1)",y=expression(paste("Mean annual temp. (",degree,"C x 10)")),size=4) +
       theme(plot.margin=unit(c(0.5,1,1,0.5), "lines"),
             axis.title.x=element_text(size=rel(3.6),margin=margin(t=15)),
             axis.title.y=element_text(size=rel(3.6),margin=margin(r=15)),

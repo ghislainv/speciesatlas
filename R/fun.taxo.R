@@ -1,7 +1,7 @@
 #!/usr/bin/Rscript
 
 # ==============================================================================
-# authors         :Ghislain Vieilledent, Aurélien Colas
+# authors         :Ghislain Vieilledent, Aurelien Colas
 # email           :ghislain.vieilledent@cirad.fr, aurelien.colas@insa-lyon.fr
 # license         :GPLv3
 # ==============================================================================
@@ -11,7 +11,7 @@
 # ==================
 
 fun.taxo <- function(path,name,spdir,spname,enough,npix){
-  
+
   ## Taxonomy
   eolid.df <- get_eolid_(spname)[[1]]
   tax.data <- data.frame(binomial=NA,authority=NA,kingdom=NA,family=NA,iucn=NA)
@@ -57,67 +57,76 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
     ## IUCN conservation status
     iucn.summary <- iucn_summary(spname)[[1]]
     tax.data$iucn <- ifelse(!is.na(iucn.summary[1]),as.character(iucn.summary$status),NA)
-    
+
     ## Encyclopedia Of Life (EOL)
-    eol.page <- Reol::DownloadEOLpages(eolpage.id,to.file=FALSE)
-    if (is.null(eol.page)) {
-      text.cut <- "The species was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org."
-      jpeg(file=paste0(path,"/image_square.jpg"),width=100,height=100,units="px")
-      grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
-      dev.off()
-    } else {
-      DOI <- Reol::GatherDataObjectInformation(eol.page)
-      # Text
-      w.text <- grep("Text",DOI$dataType)
-      if(!is.na(w.text[1])){
-        text <- DOI$description[w.text[1]]
-        # Convert HTML to text
-        text.txt <- htm2txt::htm2txt(text)
-        # We select the complete sentences with less than 1000 symbols. We also add dots and link to eol page
-        id.pts <- unlist(gregexpr(pattern="\\.(\\s[[:upper:]]|$)",text.txt))
-        id.cut <- ifelse(id.pts[1]==-1,700,max(id.pts[id.pts<=700]))
-        text.cut <- paste0(substring(text.txt,1,id.cut)," $[\\dots]$"," http://eol.org/",eolpage.id)
-      } else { 
-        text.cut <- "Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org."
+    # Text
+    text.id <- eol_pages(eolpage.id,text=1,vetted=2)$dataobj
+    if(is.data.frame(text.id)){
+      curl::curl_download(url=paste0("eol.org/data_objects/",text.id$dataobjectversionid),destfile=paste0(path,"/text.html"))
+      # Convert HTML to text
+      html <- htm2txt(readLines(paste0(path,"/text.html")))
+      i=1
+      while (nchar(html[i])<90) {
+        i=i+1
       }
-      
-      # Image
-      w.image <- grep("image/jpeg",DOI$mimeType)
-      image.url <- DOI$mediaURL[w.image[1]]
-      if(is.null(image.url)){image.url <- NA}
-      if(!is.na(image.url)){
-        ext <- extension(image.url)
-        HTTP <- tryCatch(curl::curl_download(url=image.url,destfile=paste0(path,"/image",ext)),error = function(e){NA})
-        if(is.na(HTTP)){
-          jpeg(file=paste0(path,"/image_square.jpg"),width=100,height=100,units="px")
-          grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
-          dev.off()  
-        } else {
-          img.path <- paste0(path,"/image",ext)
-          img <- magick::image_read(img.path)
-          img.bmp <- readbitmap::read.bitmap(img.path)
-          h <- dim(img.bmp)[1]
-          w <- dim(img.bmp)[2] 
-          if (w>=h) {
-            img.square <- magick::image_crop(img, paste0(h,"x",h,"+",(w-h)/2))
-          } else {
-            img.square <- magick::image_crop(img, paste0(w,"x",w,"+","0+",(h-w)/2))
-          }
-          magick::image_write(img.square,path=paste0(path,"/image_square.jpg"),format="jpg")
-        }
+      text <- html[i]
+      # We select the complete sentences with less than 1000 symbols. We also add dots and link to eol page
+      id.pts <- unlist(gregexpr(pattern="\\.(\\s[[:upper:]]|$)",text))
+      id.cut <- ifelse(id.pts[1]==-1,1000,max(id.pts[id.pts<=1000]))
+      text.cut <- substring(text,1,id.cut)
+      if(!(is.na(text.cut))){
+        text.cut <- paste0(text.cut," $[\\dots]$"," http://eol.org/",eolpage.id)
       } else {
+        text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
+      }
+
+    } else {
+      text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
+    }
+
+    # Image
+    img.id <- eol_pages(eolpage.id,images=1,vetted=2)$dataobj
+    if(is.data.frame(img.id)){
+      curl::curl_download(url=paste0("eol.org/data_objects/",img.id$dataobjectversionid),destfile=paste0(path,"/img.html"))
+      # Taking the lines of the HTML file
+      html <- readLines(paste0(path,"/img.html"))
+      i=1
+      while (substring(html[i],1,44)!="<meta content='http://media.eol.org/content/") {
+        i=i+1
+      }
+      # We select the url of the image
+      id.ext <- unlist(gregexpr(pattern="\\.jpg",html[i]))
+      img.url <- substring(html[i],16,id.ext+3)
+      HTTP <- tryCatch(curl::curl_download(url=img.url,destfile=paste0(path,"/image.jpg")),error = function(e){NA})
+      if(is.na(HTTP)){
         jpeg(file=paste0(path,"/image_square.jpg"),width=100,height=100,units="px")
         grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
         dev.off()
+      } else {
+        img.path <- paste0(path,"/image.jpg")
+        img <- magick::image_read(img.path)
+        img.bmp <- readbitmap::read.bitmap(img.path)
+        h <- dim(img.bmp)[1]
+        w <- dim(img.bmp)[2]
+        if (w>=h) {
+          img.square <- magick::image_crop(img, paste0(h,"x",h,"+",(w-h)/2))
+        } else {
+          img.square <- magick::image_crop(img, paste0(w,"x",w,"+","0+",(h-w)/2))
+        }
+        magick::image_write(img.square,path=paste0(path,"/image_square.jpg"),format="jpg")
       }
+    } else {
+      jpeg(file=paste0(path,"/image_square.jpg"),width=100,height=100,units="px")
+      grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
+      dev.off()
     }
   }
-  
+
   ##========================================
   ## Save objects to be loaded by knitr
   if(enough){
     save(list=c("tax.data","text.cut"),file=paste0(path,"/taxonomy.rda"))
   } else {
     save(list=c("tax.data","text.cut","npix"),file=paste0(path,"/data.rda"))
-  }    
+  }
 }

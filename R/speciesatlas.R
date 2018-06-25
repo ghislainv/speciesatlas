@@ -1,12 +1,12 @@
 #!/usr/bin/Rscript
 
 # ==============================================================================
-# authors         :Ghislain Vieilledent, Aurélien Colas
+# authors         :Ghislain Vieilledent, Aurelien Colas
 # email           :ghislain.vieilledent@cirad.fr, aurelien.colas@insa-lyon.fr
 # license         :GPLv3
 # ==============================================================================
 
-fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="both",title.book="Title",author.book="Author"){
+fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=1,out.type="both",title.book="Title",author.book="Author"){
 
   # =======================
   # API Keys

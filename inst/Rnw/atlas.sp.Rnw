@@ -82,7 +82,7 @@ cat(text.cut)
 \footnotesize{
 <<results="asis">>=
 rownames(Perf.ca) <- c("Value")
-rws <- 1
+rws <- 0
 col <- "\\rowcolor[gray]{0.95}"
 print.xtable(xtable(Perf.ca,digits=2,align=c("c","c","c","c","c","c","c")),
              booktabs=TRUE,
@@ -107,9 +107,9 @@ print.xtable(xtable(Perf.ca,digits=2,align=c("c","c","c","c","c","c","c")),
 \vspace{0.20cm}
 \footnotesize{
 <<results="asis">>=
-rws <- seq(0,nrow(niche),by=2)
+rws <- c(0,2)
 col <- rep("\\rowcolor[gray]{0.95}",length(rws))
-print.xtable(xtable(niche,digits=0,align=c("l","r","r","r","r","r")),
+print.xtable(xtable(niche,digits=0,align=c("l",rep("r",length(niche)))),
              booktabs=TRUE,
              add.to.row=list(pos=as.list(rws),command=col),
              floating=FALSE)
