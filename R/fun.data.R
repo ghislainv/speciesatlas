@@ -35,6 +35,7 @@ fun.data <- function(df.orig){
     ## Figures directory
     dir.create(paste0("figures/",taxon.names[sp]),recursive=TRUE,showWarnings=FALSE)
   }
+
   dir.create("BIOMOD",recursive=TRUE,showWarnings=FALSE)
   setwd("BIOMOD")
   return(list(df.sp,sp.names,sp.dir,taxon.sp,taxon.names))

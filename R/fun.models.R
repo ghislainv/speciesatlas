@@ -96,10 +96,9 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
   for (j in 1:length(fut.var[[2]])) {
     for (l in 1:length(fut.var[[3]])) {
       for (mc in 1:length(fut.var[[1]])) {
-        wf <- which(names(future[[i.mod]][[mc]]) %in% model.var)
         ## Projections by model
         BiomodProjFuture <- BIOMOD_Projection(modeling.output=BiomodModel,
-                                              new.env=future[[i.mod]][[mc]][wf],
+                                              new.env=future[[i.mod]][[mc]][[model.var]],
                                               proj.name=paste0(fut.var[[1]][mc],"_",fut.var[[2]][j],"_",fut.var[[3]][l]),
                                               selected.models=grep("_Full_",
                                                                    get_built_models(BiomodModel),

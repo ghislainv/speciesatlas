@@ -28,6 +28,10 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.
   taxon.names <- SP[[5]]
 
   ##=======================
+  ## Environmental data
+  s <- stack(environ[[model.var]])
+
+  ##=======================
   ## Parallel computations
   ##=======================
 
@@ -46,7 +50,7 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.
   ## Return number of parallel workers
   getDoParWorkers()
   enough <- vector() ## Retain if there is enough observations
-  enough <- foreach(i=1:length(taxon.sp),.packages=pkg.names.clust) %dopar% fun.species(i,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,out.type,taxon.sp,taxon.names,sp.dir,sp.names,df.sp)
+  enough <- foreach(i=1:length(taxon.sp),.packages=pkg.names.clust) %dopar% fun.species(i,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,out.type,taxon.sp,taxon.names,sp.dir,sp.names,df.sp,s)
   ## Stop the cluster
   stopCluster(clust)
   setwd("..")

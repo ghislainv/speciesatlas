@@ -10,7 +10,7 @@
 # Main function
 # ==================
 
-fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,out.type,taxon.sp,taxon.names,sp.dir,sp.names,df.sp){
+fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,out.type,taxon.sp,taxon.names,sp.dir,sp.names,df.sp,s){
 
   ## Simplifications
   sp <- taxon.sp[i]
@@ -18,12 +18,6 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
   spdir <- sp.dir[i]
   spname <- sp.names[i]
   path <- paste0("../figures/",name,"/",spdir)
-
-  ##=======================
-  ## Environmental data
-
-  ws <- which(names(environ) %in% model.var)
-  s <- stack(environ[[ws]])
 
   ##===============================
   ## Select data for target species
