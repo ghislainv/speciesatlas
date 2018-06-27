@@ -16,7 +16,7 @@ To use this package, you must have :
 
 - a list of RasterStacks with environmental datas about the future, according to several climate scenarios. For example if you have 2 years, 2 rcp scenarios and 3 climate models, your object will be a list of 4 list with 3 rasters in each.
 
-- your API Keys in an .Renviron file at the root of your computer. More informations at \url{https://ropensci.github.io/taxize-book/authentication.html}
+- your API Keys in an .Renviron file at the root of your computer. More informations at \url{https://ropensci.github.io/taxize-book/authentication.html}. These keys also can be passed as arguments.
 
 - a directory called "maxent" containing the file "maxent.jar"
 }
@@ -39,5 +39,5 @@ Vieilledent G., M. Muniz-Tagliari, C. Grinand, F. Montfort. Atlas of the biodive
 \url{https://github.com/ghislainv/atlas}
 }
 \examples{
-fun.main(df.orig,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
+fun.main(df.orig,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,n.core,title.book,author.book,eol.key,tropicos.key,iucn.key,ncbi.key)
 }

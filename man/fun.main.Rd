@@ -8,7 +8,7 @@ This function can be called to make a biodiversity atlas of a given area.
 }
 
 \usage{
-fun.main(df.orig,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
+fun.main(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="both",title.book="Title",author.book="Author",eol.key=getkey(service="eol"),tropicos.key=getkey(service="tropicos"),iucn.key=getkey(service="iucn"),ncbi.key=getkey(service="entrez"))
 }
 
 \arguments{
@@ -54,6 +54,18 @@ The title you want for your book.
 }
   \item{author.book}{
 Authors of your book.
+}
+  \item{eol.key}{
+Your Encyclopedia of Life API Key. The keys can be stored in a .REnviron file, as described in the details section.
+}
+  \item{tropicos.key}{
+Your Tropicos API Key. The keys can be stored in a .REnviron file, as described in the details section.
+}
+  \item{iucn.key}{
+Your IUCN API Key. The keys can be stored in a .REnviron file, as described in the details section.
+}
+  \item{ncbi.key}{
+Your NCBI API Key. The keys can be stored in a .REnviron file, as described in the details section.
 }
 }
 
@@ -115,7 +127,12 @@ n.core <- 3
 title.book <- "Biodiversity Atlas of Madagascar"
 author.book <- "G.Vieilledent, A.Colas"
 
-fun.main(df.orig,run.models,run.plots,run.taxo,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
+eol.key <- "xxx"
+tropicos.key <- "xxx"
+iucn.key <- "xxx"
+ncbi.key <- "xxx"
+
+fun.main(df.orig,run.models,run.plots,run.taxo,environ,future,fut.var,maxent.path,n.core,title.book,author.book,eol.key,tropicos.key,iucn.key,ncbi.key)
 }
 
 \keyword{speciesatlas}
