@@ -34,7 +34,7 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.
   ## For MAXENT.Phillips with JAVA to work on RStudio server
   Sys.unsetenv("DISPLAY")
   ## Package names for parallel computations
-  pkg.names.clust <- c("rgdal","raster","biomod2","ggplot2","Reol","knitr","grid",
+  pkg.names.clust <- c("rgdal","raster","biomod2","ggplot2","knitr","grid",
                        "xtable","magick","readbitmap","curl","htm2txt","dplyr","taxize",
                        "foreach","doParallel","parallel","bookdown","sp")
 
