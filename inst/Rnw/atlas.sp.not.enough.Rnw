@@ -1,7 +1,7 @@
 %!/usr/bin/Rscript
 
 % ==============================================================================
-  % authors         :Ghislain Vieilledent, Aurélien Colas
+  % authors         :Ghislain Vieilledent, Aurelien Colas
 % email           :ghislain.vieilledent@cirad.fr, aurelien.colas@insa-lyon.fr
 % license         :GPLv3
 % ==============================================================================
