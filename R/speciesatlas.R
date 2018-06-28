@@ -6,7 +6,7 @@
 # license         :GPLv3
 # ==============================================================================
 
-fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="both",title.book="Title",author.book="Author",eol.key=getkey(service="eol"),tropicos.key=getkey(service="tropicos"),iucn.key=getkey(service="iucn"),ncbi.key=getkey(service="entrez")){
+fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="both",title.book="Title",author.book="Author"){
 
   # =======================
   # API Keys
@@ -14,6 +14,10 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.
 
   ## API key for taxize (check yours are in an Renviron.site file in the wd)
   ## See: https://ropensci.github.io/taxize-book/authentication.html
+  eol.key <- getkey(service="eol")
+  tropicos.key <- getkey(service="tropicos")
+  iucn.key <- getkey(service="iucn")
+  ncbi.key <- getkey(service="entrez")
   check_APIkeys <- c(eol.key,tropicos.key,iucn.key,ncbi.key)
 
   SP <- fun.data(df.orig)
