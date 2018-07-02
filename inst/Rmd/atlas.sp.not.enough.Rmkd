@@ -15,7 +15,7 @@ iucn_status <- ifelse(is.na(tax.data$iucn),"--",tax.data$iucn)
 
 <div class="img">
 ```{r echo=FALSE, results='asis', out.width = "95%"}
-include_graphics(paste(path,"image_square.jpg",sep="/"))
+include_graphics(paste(path,"imagesquare.jpg",sep="/"))
 ```
 </div>
 <div class="text">

@@ -22,7 +22,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
     tax.data$family <- NA
     tax.data$iucn <- NA
     text.cut <- "The species was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org."
-    jpeg(file=paste0(path,"/image_square.jpg"),width=100,height=100,units="px")
+    jpeg(file=paste0(path,"/imagesquare.jpg"),width=100,height=100,units="px")
     grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
     dev.off()
   } else {
@@ -53,7 +53,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
       auth <- tnrs_query$authority
       authority <- ifelse(length(auth)==0,NA,auth)
     }
-    tax.data$authority <- as.character(ifelse(matched_name==spname,gsub('ü','u',authority),NA))
+    tax.data$authority <- as.character(ifelse(matched_name==spname,iconv(iconv(authority,from="UTF-8",to="ASCII//TRANSLIT"),from="ASCII//TRANSLIT",to="UTF-8"),NA))
     ## IUCN conservation status
     iucn.summary <- iucn_summary(spname)[[1]]
     tax.data$iucn <- ifelse(!is.na(iucn.summary[1]),as.character(iucn.summary$status),NA)
@@ -99,7 +99,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
       img.url <- substring(html[i],16,id.ext+3)
       HTTP <- tryCatch(curl::curl_download(url=img.url,destfile=paste0(path,"/image.jpg")),error = function(e){NA})
       if(is.na(HTTP)){
-        jpeg(file=paste0(path,"/image_square.jpg"),width=100,height=100,units="px")
+        jpeg(file=paste0(path,"/imagesquare.jpg"),width=100,height=100,units="px")
         grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
         dev.off()
       } else {
@@ -113,10 +113,10 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
         } else {
           img.square <- magick::image_crop(img, paste0(w,"x",w,"+","0+",(h-w)/2))
         }
-        magick::image_write(img.square,path=paste0(path,"/image_square.jpg"),format="jpg")
+        magick::image_write(img.square,path=paste0(path,"/imagesquare.jpg"),format="jpg")
       }
     } else {
-      jpeg(file=paste0(path,"/image_square.jpg"),width=100,height=100,units="px")
+      jpeg(file=paste0(path,"/imagesquare.jpg"),width=100,height=100,units="px")
       grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
       dev.off()
     }

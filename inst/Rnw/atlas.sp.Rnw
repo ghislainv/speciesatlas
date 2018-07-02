@@ -35,7 +35,7 @@ iucn_status <- ifelse(is.na(tax.data$iucn),"--",tax.data$iucn)
 %% Photo and summary
 
 \begin{minipage}{0.25\textwidth}
-\centering \includegraphics[width=3.5cm]{\Sexpr{paste(path,"image_square.jpg",sep="/")}}
+\centering \includegraphics[width=3.5cm]{\Sexpr{paste(path,"imagesquare.jpg",sep="/")}}
 \end{minipage}\hfill
 \begin{minipage}{0.70\textwidth}
 \scriptsize{
