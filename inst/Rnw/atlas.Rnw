@@ -7,6 +7,8 @@
 % ==============================================================================
 
 \documentclass[12pt, leqno]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage[a4paper]{geometry}
 %% \pagenumbering{arabic} %% Choose how to number the pages
 %% For fonts
@@ -16,7 +18,6 @@
 \usepackage{graphicx}
 \usepackage[round,sort]{natbib}
 \usepackage[english]{babel}
-\usepackage[utf8]{inputenc}
 \usepackage{array}
 \setcounter{secnumdepth}{4}
 \usepackage[colorlinks=true,citecolor=blue]{hyperref} %% Hyperlinks

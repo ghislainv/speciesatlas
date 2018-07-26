@@ -55,11 +55,18 @@ cat(text.cut)
 \includegraphics[width=4cm]{\Sexpr{paste(path,"presence_alt.pdf",sep="/")}}\\
 \end{minipage}%
 \begin{minipage}{0.65\textwidth}
-\small{\textbf{Number of km$^2$ with at least one presence}}\hfill
+\small{\textbf{N. of observation used in the models}}\hfill
 
 \vspace{0.20cm}
 
-\footnotesize{NPIX $=$ \Sexpr{npix}}\hfill
+<<results="asis">>=
+npix.char <- as.character(npix)
+if(nchar(npix.char)>3){
+  for(i in 1:floor(nchar(npix.char)/3)){npix.char <- paste0(substr(npix.char,1,nchar(npix.char)-4*i+1)," ",substr(npix.char,nchar(npix.char)-4*i+2,nchar(npix.char)))}
+}
+@
+
+\footnotesize{N $=$ \Sexpr{npix.char}}\hfill
 
 \vspace{0.45cm}
 

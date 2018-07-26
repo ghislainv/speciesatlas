@@ -59,11 +59,22 @@ cat(text.cut)
 \end{tabular}
 \end{minipage}%
 \begin{minipage}{0.45\textwidth}
-\small{\textbf{Number of km$^2$ with at least one presence}}\hfill
+\small{\textbf{N. of observation used in the models}}\hfill
 
 \vspace{0.20cm}
 
-\footnotesize{NPIX $=$ \Sexpr{npix}}\hfill
+<<results="asis">>=
+npix.char <- as.character(npix)
+if(nchar(npix.char)>3){
+  for(i in 1:floor(nchar(npix.char)/3)){npix.char <- paste0(substr(npix.char,1,nchar(npix.char)-4*i+1)," ",substr(npix.char,nchar(npix.char)-4*i+2,nchar(npix.char)))}
+}
+SDA.char <- as.character(SDA.fut[1,1])
+if(nchar(SDA.char)>3){
+  for(i in 1:floor(nchar(SDA.char)/3)){SDA.char <- paste0(substr(SDA.char,1,nchar(SDA.char)-4*i+1)," ",substr(SDA.char,nchar(SDA.char)-4*i+2,nchar(SDA.char)))}
+}
+@
+
+\footnotesize{N $=$ \Sexpr{npix.char}}\hfill
 
 \vspace{0.45cm}
 
@@ -71,7 +82,7 @@ cat(text.cut)
 
 \vspace{0.20cm}
 
-\footnotesize{SDA $=$ \Sexpr{SDA.fut[1,1]} km$^2$}\hfill
+\footnotesize{SDA $=$ \Sexpr{SDA.char} km$^2$}\hfill
 
 \vspace{0.45cm}
 
@@ -154,6 +165,14 @@ print.xtable(xtable(VarImp,align=c("l","r","r","r","r","r","r","r")),
 <<results="asis">>=
 names(SDA.fut) <- c("Area","RCP","Year","Disp","Area","Change")
 df <- SDA.fut[,-c(1)]
+for(j in 1:length(df$Area)){
+  if(nchar(df$Area[j])>3){
+    for(i in 1:floor(nchar(df$Area[j])/3)){df$Area[j] <- paste0(substr(df$Area[j],1,nchar(df$Area[j])-4*i+1)," ",substr(df$Area[j],nchar(df$Area[j])-4*i+2,nchar(df$Area[j])))}
+  }
+  if(nchar(df$Change[j])>3){
+    for(i in 1:floor(nchar(df$Change[j])/3)){df$Change[j] <- paste0(substr(df$Change[j],1,nchar(df$Change[j])-4*i+1)," ",substr(df$Change[j],nchar(df$Change[j])-4*i+2,nchar(df$Change[j])))}
+  }
+}
 rws <- seq(1,(nrow(df)-1),by=2)
 col <- rep("\\rowcolor[gray]{0.95}", length(rws))
 print.xtable(xtable(df,align=c("r","r","r","r","r","r"),digits=0),

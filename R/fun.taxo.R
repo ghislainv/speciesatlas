@@ -13,10 +13,10 @@
 fun.taxo <- function(path,name,spdir,spname,enough,npix){
 
   ## Taxonomy
-  eolid.df <- get_eolid_(spname)[[1]]
   tax.data <- data.frame(binomial=NA,authority=NA,kingdom=NA,family=NA,iucn=NA)
   tax.data$binomial <- spname
-  if(is.null(eolid.df)){
+  eolid.df <- tryCatch(get_eolid_(spname)[[1]],error = function(e){NA})
+  if(is.null(eolid.df)||is.na(eolid.df)){
     tax.data$kingdom <- NA
     tax.data$authority <- NA
     tax.data$family <- NA
@@ -37,23 +37,30 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
       eolpage.id <- eolid.df %>% pull(pageid) %>% first()
     }
     eolclassif.df <- classification(eol.id,db="eol")[[1]]
-    tax.data$kingdom <- eolclassif.df %>% filter(rank=="kingdom") %>% pull(name)
-    tax.data$family <- eolclassif.df %>% filter(rank=="family") %>% pull(name)
-    ## Authority
-    if (tax.data$kingdom %in% c("Animalia","Metazoa")) {
-      tax.data$kingdom <- "Animalia"
-      gnr <- gnr_resolve(spname,data_source_ids=3) %>% pull(matched_name)
-      matched_name <- regmatches(gnr,regexpr("[[:alpha:]]+ [[:alpha:]]+", gnr))
-      auth <- regmatches(gnr,regexpr("\\([[:alpha:]]+[,[:space:]]+[[:digit:]]{0,4}\\)", gnr))
-      authority <- ifelse(length(auth)==0,NA,auth)
-    } else if (tax.data$kingdom %in% c("Plantae","Viridiplantae")) {
-      tax.data$kingdom <- "Plantae"
-      tnrs_query <- tnrs(query=spname,source="iPlant_TNRS")
-      matched_name <- tnrs_query$matchedname
-      auth <- tnrs_query$authority
-      authority <- ifelse(length(auth)==0,NA,auth)
+    if(!(is.character(eolclassif.df))){
+      if(nrow(eolclassif.df[(eolclassif.df$rank=="kingdom")&!(is.na(eolclassif.df$rank)),])>0){tax.data$kingdom <- eolclassif.df %>% filter(rank=="kingdom") %>% pull(name)}
+      if(nrow(eolclassif.df[(eolclassif.df$rank=="family")&!(is.na(eolclassif.df$rank)),])>0){tax.data$family <- eolclassif.df %>% filter(rank=="family") %>% pull(name)}
+      ## Authority
+      if (tax.data$kingdom %in% c("Animalia","Metazoa")) {
+        tax.data$kingdom <- "Animalia"
+        gnr <- gnr_resolve(spname,data_source_ids=3)
+        if(nrow(gnr)>0){
+          gnr <- gnr %>% pull(matched_name)
+          matched_name <- regmatches(gnr,regexpr("[[:alpha:]]+ [[:alpha:]]+", gnr))[1]
+          auth <- regmatches(gnr,regexpr("\\([[:alpha:]]+[,[:space:]]+[[:digit:]]{0,4}\\)", gnr))
+          authority <- ifelse(length(auth)==0,NA,auth)
+        } else { authority <- NA }
+      } else if (tax.data$kingdom %in% c("Plantae","Viridiplantae")) {
+        tax.data$kingdom <- "Plantae"
+        tnrs_query <- tnrs(query=spname,source="iPlant_TNRS")
+        matched_name <- tnrs_query$matchedname
+        auth <- tnrs_query$authority
+        authority <- ifelse(length(auth)==0,NA,auth)
+      }
+      if(!(is.na(authority))){
+        tax.data$authority <- as.character(ifelse(matched_name==spname,iconv(iconv(authority,from="UTF-8",to="ASCII//TRANSLIT"),from="ASCII//TRANSLIT",to="UTF-8"),NA))
+      }
     }
-    tax.data$authority <- as.character(ifelse(matched_name==spname,iconv(iconv(authority,from="UTF-8",to="ASCII//TRANSLIT"),from="ASCII//TRANSLIT",to="UTF-8"),NA))
     ## IUCN conservation status
     iucn.summary <- iucn_summary(spname)[[1]]
     tax.data$iucn <- ifelse(!is.na(iucn.summary[1]),as.character(iucn.summary$status),NA)
@@ -64,22 +71,25 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
     if(is.data.frame(text.id)){
       curl::curl_download(url=paste0("eol.org/data_objects/",text.id$dataobjectversionid),destfile=paste0(path,"/text.html"))
       # Convert HTML to text
-      html <- htm2txt(readLines(paste0(path,"/text.html")))
+      html <- htm2txt(iconv(iconv(readLines(paste0(path,"/text.html")),from="UTF-8",to="ASCII//TRANSLIT"),from="ASCII//TRANSLIT",to="UTF-8"))
       i=1
       while (nchar(html[i])<90) {
         i=i+1
       }
-      text <- html[i]
-      # We select the complete sentences with less than 1000 symbols. We also add dots and link to eol page
-      id.pts <- unlist(gregexpr(pattern="\\.(\\s[[:upper:]]|$)",text))
-      id.cut <- ifelse(id.pts[1]==-1,1000,max(id.pts[id.pts<=1000]))
-      text.cut <- substring(text,1,id.cut)
-      if(!(is.na(text.cut))){
-        text.cut <- paste0(text.cut," $[\\dots]$"," http://eol.org/",eolpage.id)
-      } else {
+      if((i<66)&(substr(html[i],1,1)!="?")){
+        text <- html[i]
+        # We select the complete sentences with less than 1000 symbols. We also add dots and link to eol page
+        id.pts <- unlist(gregexpr(pattern="\\.(\\s[[:upper:]]|$)",text))
+        id.cut <- ifelse(id.pts[1]==-1,1000,max(id.pts[id.pts<=1000]))
+        text.cut <- substring(text,1,id.cut)
+        if(!(is.na(text.cut))){
+          text.cut <- paste0(text.cut," $[\\dots]$"," http://eol.org/",eolpage.id)
+        } else {
+          text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
+        }
+      }else {
         text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
       }
-
     } else {
       text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
     }

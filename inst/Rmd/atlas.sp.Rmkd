@@ -40,16 +40,28 @@ include_graphics(paste(path,"ca_current.png",sep="/"))
 ```
 </div>
 <div class="textcurrent2">
-**Number of km$^2$ with one presence**
+
+```{r echo=FALSE, results='asis'}
+npix.char <- as.character(npix)
+if(nchar(npix.char)>3){
+  for(i in 1:floor(nchar(npix.char)/3)){npix.char <- paste0(substr(npix.char,1,nchar(npix.char)-4*i+1)," ",substr(npix.char,nchar(npix.char)-4*i+2,nchar(npix.char)))}
+}
+SDA.char <- as.character(SDA.fut[1,1])
+if(nchar(SDA.char)>3){
+  for(i in 1:floor(nchar(SDA.char)/3)){SDA.char <- paste0(substr(SDA.char,1,nchar(SDA.char)-4*i+1)," ",substr(SDA.char,nchar(SDA.char)-4*i+2,nchar(SDA.char)))}
+}
+```
+
+**N. of observation used in the models**
 
 &nbsp;
-NPIX = `r npix`
+N = `r npix.char`
 
 &nbsp;
 **Species distribution area**
 
 &nbsp;
-SDA = `r SDA.fut[1,1]` km$^2$
+SDA = `r SDA.char` km$^2$
 
 &nbsp;
 </div>
@@ -126,6 +138,14 @@ include_graphics(paste(path,"/cazd_",max(fut.var[[2]]),"_",max(fut.var[[3]]),".p
 ```{r echo=FALSE, results='asis'}
 names(SDA.fut) <- c("Area","RCP","Year","Disp","Area","Change")
 df <- SDA.fut[,-c(1)]
+for(j in 1:length(df$Area)){
+  if(nchar(df$Area[j])>3){
+    for(i in 1:floor(nchar(df$Area[j])/3)){df$Area[j] <- paste0(substr(df$Area[j],1,nchar(df$Area[j])-4*i+1)," ",substr(df$Area[j],nchar(df$Area[j])-4*i+2,nchar(df$Area[j])))}
+  }
+  if((nchar(df$Change[j])>3)&(substr(df$Change[j],1,1)!="-")){
+    for(i in 1:floor(nchar(df$Change[j])/3)){df$Change[j] <- paste0(substr(df$Change[j],1,nchar(df$Change[j])-4*i+1)," ",substr(df$Change[j],nchar(df$Change[j])-4*i+2,nchar(df$Change[j])))}
+  }
+}
 print(xtable(df,align=c("l","l","l","l","l","l"),digits=0), type="html")
 
 ```

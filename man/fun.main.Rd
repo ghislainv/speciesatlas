@@ -8,12 +8,12 @@ This function can be called to make a biodiversity atlas of a given area.
 }
 
 \usage{
-fun.main(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="both",title.book="Title",author.book="Author")
+fun.main(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="both",title.book="Title",author.book="Author")
 }
 
 \arguments{
   \item{df.orig}{
-List of dataFrames containing your data. Each dataFrame stands for a taxon and must contains at least these columns with the exact same names : "Species" (name of the specie), "Long" (Longitude), "Lat" (Latitude) and "Taxo.group" (name of the taxon).
+List of dataFrames containing your data. Each dataFrame stands for a taxon and must contains at least these columns with the exact same names : "Species" (name of the specie), "Long" (Longitude) and "Lat" (Latitude).
 }
   \item{run.models}{
 Indicate if you want the models part to be run or not.
@@ -23,6 +23,9 @@ Indicate if you want the plots part to be run or not.
 }
   \item{run.taxo}{
 Indicate if you want the taxonomy part to be run or not.
+}
+  \item{run.map}{
+Indicate if you want the specific richness map part to be run or not.
 }
   \item{model.var}{
 Contains the parameters you want to run the study with.
@@ -64,7 +67,7 @@ Also a directory called "maxent" must contain the file "maxent.jar", the path to
 }
 
 \value{
-This function produces an output in the Bookdown format. It is created in the "Book" directory at the root.
+This function produces an output in the Bookdown format. It is created in the "Book" directory on the working directory.
 }
 
 \references{
@@ -90,6 +93,7 @@ library(raster)
 run.models <- FALSE
 run.plots <- TRUE
 run.taxo <- TRUE
+run.map <- TRUE
 df.orig <- list(read.csv(file="data/lemurs.txt",header=TRUE),read.csv(file="data/baobabs.txt",header=TRUE))
 
 model.var <-  c("temp","tseas","prec","cwd")
@@ -115,7 +119,7 @@ n.core <- 3
 title.book <- "Biodiversity Atlas of Madagascar"
 author.book <- "G.Vieilledent, A.Colas"
 
-fun.main(df.orig,run.models,run.plots,run.taxo,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
+fun.main(df.orig,run.models,run.plots,run.taxo,run.map,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
 }
 
 \keyword{speciesatlas}

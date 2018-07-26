@@ -6,7 +6,7 @@
 # license         :GPLv3
 # ==============================================================================
 
-fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="both",title.book="Title",author.book="Author"){
+fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="html",title.book="Title",author.book="Author"){
 
   # =======================
   # API Keys
@@ -54,6 +54,10 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,model.
   ## Stop the cluster
   stopCluster(clust)
   setwd("..")
+
+  if(run.map){
+    fun.map(sp.dir,extent(environ),enough,taxon.names,taxon.sp,fut.var)
+  }
 
   if((out.type=="html")||(out.type=="both")){
     fun.book(sp.dir,taxon.names,taxon.sp,enough)

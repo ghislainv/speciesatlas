@@ -35,13 +35,13 @@ include_graphics(paste(path,"presence_alt.png",sep="/"))
 ```
 </div>
 <div class="textcurrent1">
-**Number of km$^2$ with at least one presence**
+**N. of observation used in the models**
 
 &nbsp;
-NPIX = `r npix`
+N = `r npix`
 
 &nbsp;
-The number of observations for this specie was unfortunately too low to run our models. It requires at least 10 individuals to obtain meaningfull results with the models.
+The number of observations for this species was unfortunately too low to run our models. It requires more than 10 individuals to obtain meaningfull results with the models.
 
 &nbsp;
 </div>

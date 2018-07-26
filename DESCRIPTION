@@ -5,7 +5,7 @@ Version: 0.1
 Date: 2018-06-06
 Author: Ghislain Vieilledent, Aurelien Colas
 Maintainer: Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
-Description: For every specie, the atlas gives predictions about present and future distribution, according to climate change.
+Description: For every species, the atlas gives predictions about present and future distribution, according to climate change.
 License: GPLv3 + file LICENSE
 Imports: 
   rgdal,

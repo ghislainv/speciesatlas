@@ -27,20 +27,23 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
   ## Remove duplicates
   cell.pres <- cellFromXY(s,df.tsp)
 
-  ## Spatial points at center of each raster cell with presences
-  list.cell.pres <- sort(unique(cell.pres))
-  cell.pres.sp <- xyFromCell(s,list.cell.pres,spatial=TRUE)
+  if(!(is.na(cell.pres))){
+    ## Spatial points at center of each raster cell with presences
+    list.cell.pres <- sort(unique(cell.pres))
+    cell.pres.sp <- xyFromCell(s,list.cell.pres,spatial=TRUE)
 
-  ## Build data-set for presence
-  enough <- TRUE
-  dir.create(path,recursive=TRUE,showWarnings=FALSE)
-  d.presence <- as.data.frame(extract(s,cell.pres.sp))
-  Coords.presence <- coordinates(cell.pres.sp)
-  colnames(Coords.presence) <- c("x","y")
-  data.xy <- cbind(d.presence,Coords.presence)
+    ## Build data-set for presence
+    enough <- TRUE
+    dir.create(path,recursive=TRUE,showWarnings=FALSE)
+    d.presence <- as.data.frame(extract(s,cell.pres.sp))
+    Coords.presence <- coordinates(cell.pres.sp)
+    colnames(Coords.presence) <- c("x","y")
+    data.xy <- cbind(d.presence,Coords.presence)
 
-  ## Uncomplete data points
-  wcomp <- which(complete.cases(data.xy))
+    ## Uncomplete data points
+    wcomp <- which(complete.cases(data.xy))
+  } else {wcomp <- numeric(0)}
+
 
   ## Check if there's enough observations
   if (length(wcomp)<=10){

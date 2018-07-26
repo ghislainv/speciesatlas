@@ -10,7 +10,7 @@
 \details{
 To use this package, you must have :
 
-- a list of dataFrames containing your data. Each dataFrame stands for a taxon and must contains at least these columns with the exact same names : "Species" (name of the specie), "Long" (Longitude), "Lat" (Latitude) and "Taxo.group" (name of the taxon).
+- a list of dataFrames containing your data. Each dataFrame stands for a taxon and must contains at least these columns with the exact same names : "Species" (name of the specie), "Long" (Longitude) and "Lat" (Latitude).
 
 - a RasterStack containing environmental data about the area you want to study. It has to contain an "alt" column, and the other columns are different parameters. You decide which ones you want to consider runing the models.
 
@@ -39,5 +39,5 @@ Vieilledent G., M. Muniz-Tagliari, C. Grinand, F. Montfort. Atlas of the biodive
 \url{https://github.com/ghislainv/atlas}
 }
 \examples{
-fun.main(df.orig,run.models,run.plots,run.taxo,model.var,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
+fun.main(df.orig,run.models,run.plots,run.taxo,run.map,model.var,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
 }

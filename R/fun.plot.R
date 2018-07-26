@@ -48,7 +48,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     ## Committee averaging
     # Legend specifications
     breakpoints <- c(-100,100,300,500,700,900,1100)
-    colors <- c(grey(c(0.90,0.60,0.40)),"#99b467","#568203","#013220")
+    colors <- c(grey(c(0.95,0.75,0.55)),"#568203","#2B5911","#013220")
     a.arg <- list(at=seq(0,1000,length.out=6), labels=c("0","1","2","3","4","5"),cex.axis=1.5)
     l.arg <- list(text="Vote",side=2, line=0.5, cex=2.5)
     # Load data
@@ -170,7 +170,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
         caFut <- sum(caS)
         # Legend
         breakpoints <- seq(-100,3100,by=200)
-        colors <- c(grey(c(0.90,seq(0.75,0.45,-0.05))),gcolors(8))
+        colors <- c(grey(c(seq(0.90,0.55,-0.05))),gcolors(8))
         a.arg <- list(at=seq(0,3000,length.out=16), labels=c(0:15), cex.axis=1.5)
         l.arg <- list(text="Vote",side=2, line=0.5, cex=2.5)
         # Plot (Committee Averaging Full Dispersal)
