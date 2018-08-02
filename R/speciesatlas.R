@@ -55,6 +55,8 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
   stopCluster(clust)
   setwd("..")
 
+  ext <- extent(environ)
+  save(list=c("sp.dir","ext","enough","taxon.names","taxon.sp","fut.var"),file="map.rda")
   if(run.map){
     fun.map(sp.dir,extent(environ),enough,taxon.names,taxon.sp,fut.var)
   }
