@@ -49,7 +49,21 @@ csl: journal-of-applied-ecology.csl
 description: "This is a biodiversity atlas."
 ---
 
-# How to read the atlas
+# Foreword
+
+$^a$ : CIRAD (Montpellier, FRANCE)
+
+$^b$ : INSA de Lyon (Lyon, FRANCE)
+
+$^c$ : NITIDAE (Montpellier, FRANCE)
+
+-------------
+
+This biodiversity atlas is a prototype obtained with the R package `speciesatlas`. It is part of the **BioSceneMada** project (https://bioscenemada.cirad.fr/)
+
+We use the biomod2 R package to model species distribution and perform model averaging. Five statistical models are used: GLM, GAM, Random Forest, Maxent and ANN to infer species climatic niche from occurrence data. For estimating species vulnerability to climate change, we forecast future species distribution using climate projections in 2050 and 2080. We used the projections of three global climate models (GCMs), following the representative concentration pathways (RCPs) 4.5 and 8.5. GCMs were obtained from the Coupled Model Intercomparison Project Phase 5 (CMIP5) of the Intergovernmental Panel on Climate Change (IPCC). We use the following three contrasted GCMs: CCSM4, GISS-E2-R and HadGEM2-ES. Climatic data are obtained from the MadaClim website (https://madaclim.cirad.fr) which provides the CCAFS GCM future climate data (http://www.ccafs-climate.org/data/) specifically for Madagascar.
+
+-------------
 
 (ref:cap-head) The top head of an atlas page.
 
@@ -59,7 +73,7 @@ knitr::include_graphics("figures/head.png")
 
 <div class="imgcurrent">
 
-(ref:cap-alt) The map showing the presences
+(ref:cap-alt) The map showing the points of presences
 
 ```{r alt, echo=FALSE, fig.cap="(ref:cap-alt)"}
 knitr::include_graphics("figures/alt.png")
@@ -67,7 +81,7 @@ knitr::include_graphics("figures/alt.png")
 </div>
 
 <div class="imgcurrent">
-On top of the page (Fig. \@ref(fig:head)) there is the name of the species, its taxonomy with the kingdom and the family. When available there's also the authority (name and year) and the IUCN status. It is an endangerment indicator for every species, with different levels of threat like *Least Concern* (LC), *Vulnerable* (VU) or *Critically Endangered* (CR). Below these, there are descriptive image and text (when available) that helps to know which species it is about if its name is not evocative enough. A link to the corresponding *Encyclopedia of Life* page is given for every species. The first map (Fig. \@ref(fig:alt)) is showing all the occurences of the species with the map of the area for background. If the occurences are really gathered, a black rectangle shows the extent of the other maps. The number of occurences for the species is written on the right of the maps.
+On top of the page (Fig. \@ref(fig:head)) there is the name of the species, its taxonomy with the kingdom and the family. When available there's also the authority (name and year) and the IUCN status (http://www.iucnredlist.org/). It is an endangerment indicator for every species, with different levels of threat like *Least Concern* (LC), *Vulnerable* (VU) or *Critically Endangered* (CR). Below these, there are descriptive image and text (when available). A link to the corresponding *Encyclopedia of Life* page is given for every species. The first map (Fig. \@ref(fig:alt)) is showing all the occurences of the species with the map of the area for background. If the occurences are really gathered, a black rectangle shows the extent of the other maps. The number of occurences for the species is written on the right of the maps.
 </div>
 
 
@@ -92,7 +106,7 @@ print(xtable(Perf.ca,digits=2,align=c("l","l","l","l","l","l","l")), type="html"
 </div>
 
 <div class="textcurrent2">
-Every species have those items in common, but the presence of the other informations depend on the number of occurences for the species. We chose not to run the models if the species presentes less than 10 observations. For those species, there isn't anything else on the atlas page. For other species with enough inidividuals, the results of the models are presented over several maps and tables. The second map (Fig. \@ref(fig:ca)) is showing the binary vote for every model concerning the presence of the species. We chose 5 models of BIOMOD2 : *Generalized Linear Model (GLM)*, *Generalized Additive Model (GAM)*, *Random Forest (RF)*, *Maximum Entropy (MaxEnt)* and *Artificial Neural Network (ANN)*.If 3 models or more are considering the presence on a pixel, we admit the species is present there, and it is colored in green on the map. Also there is a table that shows the values for the effectiveness indicators.
+Every species have those items in common, but the presence of the other informations depend on the number of occurences for the species. We chose not to run the models if the species presentes less than 10 observations. For those species, there isn't anything else on the atlas page. For other species with enough occurences, the results of the models are presented over several maps and tables. The second map (Fig. \@ref(fig:ca)) is showing the binary vote for every model concerning the presence of the species. We chose 5 models of BIOMOD2 : *Generalized Linear Model (GLM)*, *Generalized Additive Model (GAM)*, *Random Forest (RF)*, *Maximum Entropy (MaxEnt)* and *Artificial Neural Network (ANN)*.If 3 models or more are considering the presence on a pixel, we admit the species is present there, and it is colored in green on the map. Also there is a table that shows the values for the effectiveness indicators.
 </div>
 
 
@@ -117,7 +131,7 @@ print(xtable(niche,digits=0,align=rep("l",length(niche)+1)), type="html")
 
 <div class="imgniche">
 
-On the following section, the graph (Fig. \@ref(fig:niche)) is presenting the relation between *Annual precipitation* and *Mean annual temperature* : every species is marked by a dot at the intersection of its value for the two variables. It allows us to see if the species only live under certain conditions. For most of the species, those climatic niches are  relatively gathered. Afterthat there's a first table that informs us on the environmental tendancy for places where individuals of the species where detected. There are the mean and quantiles for every variable studied, it gives an idea on the environment this species need. The second table gives information on the importance of the climatic variables. In other words it designates which are the variables that are conditioning the most the presence of the species. We can read the results for every 5 models of `BIOMOD2`, and there's a synthesis on the two last columns.
+On the following section, the graph (Fig. \@ref(fig:niche)) represents the climatic niche of the species based on the relationship between *annual precipitation* and *mean annual temperature* : every species is marked by a dot at the intersection of its value for the two variables. It allows us to see if the species only live under certain conditions. For most of the species, those climatic niches are  relatively gathered. Afterthat there's a first table that informs us on the environmental tendancy for places where individuals of the species where detected. There are the mean and quantiles for every variable studied, it gives an idea on the environment this species need. The second table gives information on the importance of the climatic variables. In other words it designates which are the variables that are conditioning the most the presence of the species. We can read the results for every 5 models of `BIOMOD2`, and there's a synthesis on the two last columns.
 
 </div>
 
@@ -148,7 +162,7 @@ knitr::include_graphics("figures/cazd.png")
 
 <div class="regular">
 
-The last section of the page is presenting the results obtained for the different future scenarios. The two maps (Fig. \@ref(fig:cafd), \@ref(fig:cazd)) are the extreme cases (RCP8.5 and 2080) with or without dispersion. There's 15 levels on the legend because of the 5 models and the 3 GCMs. For every GCM we have the binary response for every distribution model. That time we consider the species present on a pixel if at least 8 out of 15 answers are positive. Summing these pixels provides us the new *Species distribution area* for this scenario, and we can measure the percentage of variation relative to the projection for the present. Those informations are in the two last columns of the table. 
+The last section of the page is presenting the results obtained for the different future scenarioscoming from the IPCC (https://www.ipcc.ch/). The two maps (Fig. \@ref(fig:cafd), \@ref(fig:cazd)) are the extreme cases (RCP8.5 and 2080) with or without dispersion. There's 15 levels on the legend because of the 5 models and the 3 GCMs. For every GCM we have the binary response for every distribution model. That time we consider the species present on a pixel if at least 8 out of 15 answers are positive. Summing these pixels provides us the new *Species distribution area* for this scenario, and we can measure the percentage of variation relative to the projection for the present. Those informations are in the two last columns of the table. 
 
 ```{r echo=FALSE, results='asis'}
 names(SDA.fut) <- c("Area","RCP","Year","Disp","Area","Change")

@@ -39,5 +39,5 @@ Vieilledent G., M. Muniz-Tagliari, C. Grinand, F. Montfort. Atlas of the biodive
 \url{https://github.com/ghislainv/atlas}
 }
 \examples{
-fun.main(df.orig,run.models,run.plots,run.taxo,run.map,model.var,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
+fun.main(df.orig,run.models,run.plots,run.taxo,run.map,model.var,environ,future,fut.var,maxent.path,n.core,out.type,title.book,author.book)
 }

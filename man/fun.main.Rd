@@ -8,7 +8,7 @@ This function can be called to make a biodiversity atlas of a given area.
 }
 
 \usage{
-fun.main(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="both",title.book="Title",author.book="Author")
+fun.main(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="html",title.book="Title",author.book="Author")
 }
 
 \arguments{
@@ -52,6 +52,9 @@ Directory where maxent.jar can be found.
   \item{n.core}{
 Number of cores you want to be used by running the models
 }
+  \item{out.type}{
+"html" for a Bookdown output, "pdf" for a pdf output and "both" for both of them.
+}
   \item{title.book}{
 The title you want for your book.
 }
@@ -93,33 +96,23 @@ library(raster)
 run.models <- FALSE
 run.plots <- TRUE
 run.taxo <- TRUE
-run.map <- TRUE
-df.orig <- list(read.csv(file="data/lemurs.txt",header=TRUE),read.csv(file="data/baobabs.txt",header=TRUE))
+run.map <- FALSE
+df.orig <- list(read.csv(file="lemurs.txt",header=TRUE),read.csv(file="baobabs.txt",header=TRUE))
 
 model.var <-  c("temp","tseas","prec","cwd")
-environ <- stack("data/rasters/environ.tif")
+environ <- stack("environ.tif")
 
 fut.var <- list(c("cc","he","gs"),c("45","85"),c("2050","2080"))
-future <- vector("list")
-i.mod <- 1
+future <- list(list(stack("cc_45_2050.tif"), stack("he_45_2050.tif"), stack("gs_45_2050.tif")), list(stack("cc_45_2080.tif"), stack("he_45_2080.tif"), stack("gs_45_2080.tif")), list(stack("cc_85_2050.tif"), stack("he_85_2050.tif"), stack("gs_85_2050.tif")), list(stack("cc_85_2080.tif"), stack("he_85_2080.tif"), stack("gs_85_2080.tif")))
 
-for (j in 1:length(fut.var[[2]])) { #rcp
-  for (l in 1:length(fut.var[[3]])) { #yr
-    future[[i.mod]] <- vector("list")
-    for (mc in 1:length(fut.var[[1]])) { #mod
-      ## Load climatic data
-      future[[i.mod]][[mc]] <- stack(paste0("data/rasters/",fut.var[[1]][mc],"_",fut.var[[2]][j],"_",fut.var[[3]][l],".tif"))
-    }
-    i.mod <- i.mod+1
-  }
-}
 
 maxent.path <- paste0(getwd(),"/maxent")
 n.core <- 3
+out.type="html"
 title.book <- "Biodiversity Atlas of Madagascar"
 author.book <- "G.Vieilledent, A.Colas"
 
-fun.main(df.orig,run.models,run.plots,run.taxo,run.map,environ,future,fut.var,maxent.path,n.core,title.book,author.book)
+fun.main(df.orig,run.models,run.plots,run.taxo,run.map,environ,future,fut.var,maxent.path,n.core,out.type,title.book,author.book)
 }
 
 \keyword{speciesatlas}
