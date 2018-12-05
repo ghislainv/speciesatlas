@@ -4,7 +4,7 @@ Title: Building a biodiversity atlas with a synthetic ecological sheet per speci
 Version: 0.1
 Date: 2018-06-06
 Author@R: c(person("Ghislain","Vieilledent",role=c("aut","cre"),email="ghislain.vieilledent@cirad.fr", comment=c(ORCID="0000-0002-1685-4997")),
-  person("Aurélien","Colas",role="aut",email="ghislain.vieilledent@cirad.fr"))
+  person("Aurelien","Colas",role="aut",email="aurelien.colas@insa-lyon.fr"))
 Maintainer: Ghislain Vieilledent <ghislain.vieilledent@cirad.fr>
 Description: This package build a biodiversity atlas with a synthetic sheet per species including various ecological infromation.
 License: GPLv3 | file LICENSE
@@ -27,8 +27,9 @@ Imports:
   bookdown,
   sp,
   grid
-Suggests: knitr,
-    rmarkdown
+Suggests:
+  knitr,
+  rmarkdown
 VignetteBuilder: knitr
 URL: https://github.com/ghislainv/speciesatlas
 BugReports: https://github.com/ghislainv/speciesatlas/issues
