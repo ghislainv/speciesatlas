@@ -18,9 +18,9 @@ There are more information about how to use the package in the description files
 
 The area we tested the package is Madagascar and the taxons are **Lemurs** and **Baobabs**. We obtain one atlas page for every specie, in the PDF or Bookdown format.
 
-![](img/PDF.PNG)
+![](inst/img/PDF.PNG)
 
-![](img/Bookdown.PNG)
+![](inst/img/Bookdown.PNG)
 
 ## Licence
 

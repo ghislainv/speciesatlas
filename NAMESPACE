@@ -22,3 +22,7 @@ importFrom(sp,spTransform)
 importFrom(sp,SpatialPointsDataFrame)
 importFrom(sp,coordinates)
 importFrom(sp,SpatialPoints)
+importFrom("grDevices", "colorRampPalette", "dev.off", "grey", "jpeg",
+               "pdf", "png", "terrain.colors")
+importFrom("graphics", "par", "rect")
+importFrom("stats", "binomial", "complete.cases")

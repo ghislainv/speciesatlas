@@ -8,7 +8,9 @@ This function can be called to make a biodiversity atlas of a given area.
 }
 
 \usage{
-fun.main(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="html",title.book="Title",author.book="Author")
+fun.main(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,
+         model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),
+         out.type="html",title.book="Title",author.book="Author")
 }
 
 \arguments{
@@ -90,7 +92,7 @@ Vieilledent G., M. Muniz-Tagliari, C. Grinand, F. Montfort. Atlas of the biodive
 }
 
 \examples{
-
+\dontrun{
 library(raster)
 
 run.models <- FALSE
@@ -103,8 +105,12 @@ model.var <-  c("temp","tseas","prec","cwd")
 environ <- stack("environ.tif")
 
 fut.var <- list(c("cc","he","gs"),c("45","85"),c("2050","2080"))
-future <- list(list(stack("cc_45_2050.tif"), stack("he_45_2050.tif"), stack("gs_45_2050.tif")), list(stack("cc_45_2080.tif"), stack("he_45_2080.tif"), stack("gs_45_2080.tif")), list(stack("cc_85_2050.tif"), stack("he_85_2050.tif"), stack("gs_85_2050.tif")), list(stack("cc_85_2080.tif"), stack("he_85_2080.tif"), stack("gs_85_2080.tif")))
-
+future <- list(
+  list(stack("cc_45_2050.tif"), stack("he_45_2050.tif"), stack("gs_45_2050.tif")),
+  list(stack("cc_45_2080.tif"), stack("he_45_2080.tif"), stack("gs_45_2080.tif")),
+  list(stack("cc_85_2050.tif"), stack("he_85_2050.tif"), stack("gs_85_2050.tif")),
+  list(stack("cc_85_2080.tif"), stack("he_85_2080.tif"), stack("gs_85_2080.tif"))
+)
 
 maxent.path <- paste0(getwd(),"/maxent")
 n.core <- 3
@@ -112,7 +118,8 @@ out.type="html"
 title.book <- "Biodiversity Atlas of Madagascar"
 author.book <- "G.Vieilledent, A.Colas"
 
-fun.main(df.orig,run.models,run.plots,run.taxo,run.map,environ,future,fut.var,maxent.path,n.core,out.type,title.book,author.book)
+fun.main(df.orig, run.models, run.plots, run.taxo, run.map, environ,
+  future, fut.var, maxent.path, n.core, out.type, title.book, author.book)
 }
-
+}
 \keyword{speciesatlas}

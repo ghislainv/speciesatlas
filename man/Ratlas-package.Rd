@@ -23,8 +23,8 @@ To use this package, you must have :
 
 \author{
 \packageAuthor{speciesatlas}
-
-Maintainer: \packageMaintainer{speciesatlas}}
+Maintainer: \packageMaintainer{speciesatlas}
+}
 
 \references{
 Muniz-Tagliari M., J.-M. Leong Pock-Tsy, C. Cornu and P. Danthu and G. Vieilledent. Vulnerability of the seven baobab species in Madagascar to climate change. in prep.
@@ -35,9 +35,5 @@ Vieilledent G., M. Muniz-Tagliari, C. Grinand, F. Montfort. Atlas of the biodive
 \keyword{speciesatlas}
 \seealso{
 \url{https://bioscenemada.cirad.fr/}
-
-\url{https://github.com/ghislainv/atlas}
-}
-\examples{
-fun.main(df.orig,run.models,run.plots,run.taxo,run.map,model.var,environ,future,fut.var,maxent.path,n.core,out.type,title.book,author.book)
+\url{https://github.com/ghislainv/speciesatlas}
 }
