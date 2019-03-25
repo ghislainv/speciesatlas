@@ -37,6 +37,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
       eolpage.id <- eolid.df %>% pull(pageid) %>% first()
     }
     eolclassif.df <- classification(eol.id,db="eol")[[1]]
+
     if(!(is.character(eolclassif.df))){
       if(nrow(eolclassif.df[(eolclassif.df$rank=="kingdom")&!(is.na(eolclassif.df$rank)),])>0){tax.data$kingdom <- eolclassif.df %>% filter(rank=="kingdom") %>% pull(name)}
       if(nrow(eolclassif.df[(eolclassif.df$rank=="family")&!(is.na(eolclassif.df$rank)),])>0){tax.data$family <- eolclassif.df %>% filter(rank=="family") %>% pull(name)}
@@ -67,7 +68,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
 
     ## Encyclopedia Of Life (EOL)
     # Text
-    text.id <- eol_pages(eolpage.id,text=1,vetted=2)$dataobj
+    text.id <- eol_pages(eolpage.id,text_page=1,vetted=2)$dataobj
     if(is.data.frame(text.id)){
       curl::curl_download(url=paste0("eol.org/data_objects/",text.id$dataobjectversionid),destfile=paste0(path,"/text.html"))
       # Convert HTML to text
@@ -95,7 +96,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
     }
 
     # Image
-    img.id <- eol_pages(eolpage.id,images=1,vetted=2)$dataobj
+    img.id <- eol_pages(eolpage.id,images_page=1,vetted=2)$dataobj
     if(is.data.frame(img.id)){
       curl::curl_download(url=paste0("eol.org/data_objects/",img.id$dataobjectversionid),destfile=paste0(path,"/img.html"))
       # Taking the lines of the HTML file
