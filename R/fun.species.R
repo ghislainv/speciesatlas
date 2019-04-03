@@ -27,7 +27,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
   ## Remove duplicates
   cell.pres <- cellFromXY(s,df.tsp)
 
-  if(!(is.na(cell.pres))){
+  if(!all(is.na(cell.pres))){
     ## Spatial points at center of each raster cell with presences
     list.cell.pres <- sort(unique(cell.pres))
     cell.pres.sp <- xyFromCell(s,list.cell.pres,spatial=TRUE)
@@ -86,7 +86,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
   ##===================================================
   ## Plotting
 
-  if (run.plots) {
+  if (run.plots & !all(is.na(cell.pres))) {
 
     fun.plot(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biomod[[1]],Biomod[[2]],fut.var,npix,environ,s,out.type)
 
