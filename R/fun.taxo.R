@@ -68,7 +68,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
 
     ## Encyclopedia Of Life (EOL)
     # Text
-    text.id <- eol_pages(eolpage.id,text_page=1,vetted=2)$dataobj
+    text.id <- eol_pages(eolpage.id,texts_page=1,vetted=2)$dataobj
     if(is.data.frame(text.id)){
       curl::curl_download(url=paste0("eol.org/data_objects/",text.id$dataobjectversionid),destfile=paste0(path,"/text.html"))
       # Convert HTML to text
