@@ -24,7 +24,7 @@ fun.data <- function(df.orig){
     coords <- cbind(df.orig[[sp]]$Long,df.orig[[sp]]$Lat)
     df.sp[[sp]] <- SpatialPointsDataFrame(coords,data=as.data.frame(df.orig[[sp]]),proj4string=CRS("+init=epsg:4326"))
     ## Reproject as raster projection
-    df.sp[[sp]] <- spTransform(df.sp[[sp]],CRS("+init=epsg:32738"))
+    df.sp[[sp]] <- spTransform(df.sp[[sp]],CRS("+init=epsg:32737"))
     ## Species
     df.sp[[sp]]$Species <- gsub("\\s$","",df.sp[[sp]]$Species) # Remove final space in names
     sp.names <- c(sp.names,levels(as.factor(df.sp[[sp]]$Species))) # Sorted in alphabetical order
