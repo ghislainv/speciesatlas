@@ -133,7 +133,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     Index <- c("ROC","ACCURACY","TSS","KAPPA")
     Perf.ca <- data.frame(ROC=NA,OA=NA,TSS=NA,K=NA,Sen=NA,Spe=NA)
     for (ind in 1:length(Index)) {
-      v <- Find.Optim.Stat(Stat=Index[ind],Fit=caData,Obs=ObsData,Fixed.thresh=600) # ! here thresh=600: three models at least
+      v <- Find.Optim.Stat(Stat=Index[ind],Fit=caData,Obs=ObsData,Fixed.thresh=599) # ! here vote ca > 599: three models at least
       Perf.ca[,ind] <- v[1]
     }
     Perf.ca$Sen <- v[3]

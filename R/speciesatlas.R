@@ -20,16 +20,18 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
   ncbi.key <- getkey(service="entrez")
   check_APIkeys <- c(eol.key,tropicos.key,iucn.key,ncbi.key)
 
-  SP <- fun.data(df.orig)
+  ##=======================
+  ## Environmental data
+  s <- stack(environ[[model.var]])
+  
+  ##=======================
+  ## Arrange occurences
+  SP <- fun.data(df.orig, proj4=crs(s))
   df.sp <- SP[[1]]
   sp.names <- SP[[2]]
   sp.dir <- SP[[3]]
   taxon.sp <- SP[[4]]
   taxon.names <- SP[[5]]
-
-  ##=======================
-  ## Environmental data
-  s <- stack(environ[[model.var]])
 
   ##=======================
   ## Parallel computations
