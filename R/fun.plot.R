@@ -11,7 +11,7 @@
 # ==================
 
 fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,BiomodModel,fut.var,npix,environ,s,out.type){
-
+  
   ##=====================
   ## Current distribution
 
@@ -75,7 +75,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     }
 
     ## Present species distribution area (km2)
-    SDA.pres <- sum(values(ca)>600,na.rm=TRUE) # Just the sum because one pixel is 1km2.
+    SDA.pres <- sum(values(ca)>=600,na.rm=TRUE) # Just the sum because one pixel is 1km2.
 
     ## Colors definition
     gcolors <- colorRampPalette(c("#568203","#013220"))
@@ -84,7 +84,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     ## Ecological niche
 
     ## 95% quantiles for alt, temp, prec, tseas, cwd
-    wC <- which(values(ca)>600)
+    wC <- which(values(ca)>=600)
     niche.df <- as.data.frame(s)[wC,]
     niche.df$alt <- environ$alt[wC]
     Mean <- round(apply(niche.df,2,mean,na.rm=TRUE))
@@ -100,7 +100,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     wAbs <- which(is.na(BiomodData@data.species))
     Abs.df <- BiomodData@data.env.var[wAbs,]
     # Plot MAP-MAT
-    map.mat <- ggplot(mapmat.df, aes(x=prec, y=temp)) + xlim(250,3000) + ylim(150,280) +
+    map.mat <- ggplot(mapmat.df, aes(x=prec, y=temp)) + xlim(250, 1550) + ylim(220, 280) +
       geom_density2d(data=Abs.df,col=grey(0.5)) +
       geom_point(data=mapmat.df,col="darkgreen",alpha=1/3) +
       labs(x="Annual precipitation (mm.y-1)",y=expression(paste("Mean annual temp. (",degree,"C x 10)")),size=4) +
@@ -128,7 +128,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     ObsData[is.na(ObsData)] <- 0
     caData <- values(ca)[cellFromXY(ca,xy=BiomodData@coord)]
     PredData <- rep(0,length(caData))
-    PredData[caData>600] <- 1
+    PredData[caData>=600] <- 1
     # Committee averaging performance
     Index <- c("ROC","ACCURACY","TSS","KAPPA")
     Perf.ca <- data.frame(ROC=NA,OA=NA,TSS=NA,K=NA,Sen=NA,Spe=NA)
