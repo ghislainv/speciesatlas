@@ -85,7 +85,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
 
     ## 95% quantiles for alt, temp, prec, tseas, cwd
     wC <- which(values(ca)>=600)
-    niche.df <- as.data.frame(s)[wC,]
+    niche.df <- as.data.frame(values(s))[wC,]
     niche.df$alt <- environ$alt[wC]
     Mean <- round(apply(niche.df,2,mean,na.rm=TRUE))
     q <- round(apply(niche.df,2,quantile,c(0.025,0.975),na.rm=TRUE))
@@ -95,7 +95,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     # In SDA
     nC <- length(wC)
     Samp <- if (nC>1000) {sample(wC,1000,replace=FALSE)} else {wC}
-    mapmat.df <- as.data.frame(s)[Samp,]
+    mapmat.df <- as.data.frame(values(s))[Samp,]
     # Pseudo-absences
     wAbs <- which(is.na(BiomodData@data.species))
     Abs.df <- BiomodData@data.env.var[wAbs,]
