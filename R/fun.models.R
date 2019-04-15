@@ -25,7 +25,9 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
 
   ## BIOMOD_ModelingOptions
   BiomodOptions <- BIOMOD_ModelingOptions(GLM=list(type="quadratic",interaction.level=0,myFormula=NULL,
-                                                   family=binomial(link="logit"),test="AIC"),
+                                                   family=binomial(link="logit"),test="AIC",  control = glm.control(epsilon = 1e-08, 
+                                                                                                                    maxit = 100, 
+                                                                                                                    trace = F)),
                                           GAM=list(algo="GAM_mgcv",type="s_smoother",k=4,interaction.level=0,
                                                    myFormula=NULL,
                                                    family=binomial(link="logit")),
@@ -58,7 +60,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                                          value=TRUE), ## Full models only
                                       em.by="all",
                                       eval.metric=c("TSS"),
-                                      eval.metric.quality.threshold=c(0.5),
+                                      eval.metric.quality.threshold=0.5,
                                       prob.mean=FALSE,
                                       prob.ci=FALSE,
                                       prob.ci.alpha=0.05,

@@ -238,9 +238,10 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     }
     # SDA
     SDA.fut$perc.change <- round(100*((SDA.fut$area.fut-SDA.fut$area.pres)/SDA.fut$area.pres))
+    SDA.fut <- SDA.fut[with(SDA.fut, order(rcp, disp, yr)),]
     # Alt
     Alt.fut$change <- Alt.fut$mean.fut-Alt.fut$mean.pres
-
+    Alt$fut <- Alt.fut[with(Alt.fut, order(rcp, disp, yr)),]
     ##========================================
     ## Save objects to be loaded by knitr
     save(list=c("SDA.fut","Alt.fut","niche","Perf.ca","Perf.mods","VarImp","npix"),file=paste0(path,"/plotting.rda"))
