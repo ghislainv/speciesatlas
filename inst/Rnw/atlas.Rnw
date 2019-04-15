@@ -9,7 +9,7 @@
 \documentclass[12pt, leqno]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[a4paper]{geometry}
+\usepackage[landscape]{geometry}
 %% \pagenumbering{arabic} %% Choose how to number the pages
 %% For fonts
 \usepackage[scaled=0.92]{helvet}
