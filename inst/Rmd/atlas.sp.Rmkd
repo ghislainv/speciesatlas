@@ -100,7 +100,7 @@ print(xtable(niche,digits=0,align=rep("l",length(niche)+1)), type="html")
 **Variable importance**
 ```{r echo=FALSE, results='asis'}
 names(VarImp) <- c("GAM", "RF", "MaxE", "ANN","mrank","rank")
-print(xtable(VarImp,align=c("l","l","l","l","l","l","l","l")), type="html")
+print(xtable(VarImp,align=rep("l", length(VarImp)+1)), type="html")
 ```
 </div>
 
