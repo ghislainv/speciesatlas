@@ -11,7 +11,13 @@
 # ==================
 
 fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent.path){
-
+  
+  if (length(p)<30){
+    models_used <- c("GAM","RF","MAXENT.Phillips","ANN")
+  }else{
+    models_used <- c("GLM","GAM","RF","MAXENT.Phillips","ANN")
+  }
+  
   ## BIOMOD_FormatingData
   set.seed(1234) ## Reproducible pseudo-absences
   BiomodData <- BIOMOD_FormatingData(resp.var=p,
@@ -24,10 +30,8 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
   saveRDS(BiomodData,paste0(spdir,"/BiomodData.rds"))
 
   ## BIOMOD_ModelingOptions
-  BiomodOptions <- BIOMOD_ModelingOptions(GLM=list(type="quadratic",interaction.level=0,myFormula=NULL,
-                                                   family=binomial(link="logit"),test="AIC",  control = glm.control(epsilon = 1e-08, 
-                                                                                                                    maxit = 100, 
-                                                                                                                    trace = F)),
+  BiomodOptions <- BIOMOD_ModelingOptions(GLM=list(type="quadratic",interaction.level=0,myFormula=NULL,family=binomial(link="logit"),
+                                                    test="AIC",  control = glm.control(epsilon = 1e-08, maxit = 100, trace = F)),
                                           GAM=list(algo="GAM_mgcv",type="s_smoother",k=4,interaction.level=0,
                                                    myFormula=NULL,
                                                    family=binomial(link="logit")),
@@ -43,7 +47,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
   ## BIOMOD_Modeling
   set.seed(1234) ## Reproducible results
   BiomodModel <- BIOMOD_Modeling(BiomodData,
-                                 models=c("GLM","GAM","RF","MAXENT.Phillips","ANN"),
+                                 models=models_used,
                                  models.options=BiomodOptions,
                                  NbRunEval=1,
                                  DataSplit=70,
@@ -52,12 +56,34 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                  rescal.all.models=TRUE,
                                  do.full.models=TRUE,
                                  modeling.id="5mod") ## 5 statistical models
-
+  
+  # ## Removing models not converging 
+  # good_models <- models_used
+  # warn = grep("not converge|fit", capture.output(warnings()))
+  # if (length(warn)>0){
+  #   if (grepl("glm", warn)==T){good_models<-good_models[!grepl("GLM", good_models)]}
+  #   if (grepl("gam", warn)==T){good_models<-good_models[!grepl("GAM", good_models)]}
+  # }
+  # 
+  # ## If some models didn't worked we try again without them
+  # if (length(good_models)!= length(models_used)){
+  #   BiomodModel <- BIOMOD_Modeling(BiomodData,
+  #                                  models=good_models,
+  #                                  models.options=BiomodOptions,
+  #                                  NbRunEval=1,
+  #                                  DataSplit=70,
+  #                                  VarImport=3,
+  #                                  models.eval.meth=c("KAPPA","TSS","ROC"),
+  #                                  rescal.all.models=TRUE,
+  #                                  do.full.models=TRUE,
+  #                                  modeling.id="5mod") ## 5 statistical models
+  # }
+  
   ## Building ensemble-models
   BiomodEM <- BIOMOD_EnsembleModeling(modeling.output=BiomodModel,
-                                      chosen.models=grep("_Full_",
-                                                         get_built_models(BiomodModel),
-                                                         value=TRUE), ## Full models only
+                                      chosen.models= grep("_Full_",
+                                                          get_built_models(BiomodModel),
+                                                          value=TRUE),
                                       em.by="all",
                                       eval.metric=c("TSS"),
                                       eval.metric.quality.threshold=0.5,
