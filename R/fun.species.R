@@ -58,7 +58,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
     ## Transform as a SpatialPointsDataFrame and SpatialPoints (for presence only)
     d <- SpatialPointsDataFrame(coords=Coords.presence[wcomp,], data=data.xy[wcomp,],
                                 proj4string=crs(s))
-    p <- SpatialPoints(d) ## This is used for presence-only data
+    p <- SpatialPoints(d, proj4string=crs(d)) ## This is used for presence-only data
 
 
 
