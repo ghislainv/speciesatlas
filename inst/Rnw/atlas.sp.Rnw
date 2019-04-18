@@ -131,10 +131,12 @@ print.xtable(xtable(niche,digits=0,align=c("l",rep("r",length(niche)))),
 \vspace{0.20cm}
 \footnotesize{
 <<results="asis">>=
-names(VarImp) <- c("GLM","GAM","RF","MaxE","ANN","mrank","rank")
+names(VarImp)[names(VarImp) == "MAXENT.Phillips"] <- 'MaxE'
+names(VarImp)[names(VarImp) == 'mean.rank'] <- 'mrank'
+# names(VarImp) <- c("GLM","GAM","RF","MaxE","ANN","mrank","rank")
 rws <- c(1,3)
 col <- rep("\\rowcolor[gray]{0.95}",2)
-print.xtable(xtable(VarImp,align=c("l","r","r","r","r","r","r","r")),
+print.xtable(xtable(VarImp,align=c("l",rep("r", length(VarImp)))),
              booktabs=TRUE,
              add.to.row=list(pos=as.list(rws),command=col),
              floating=FALSE)
