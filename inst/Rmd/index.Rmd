@@ -138,7 +138,7 @@ On the following section, the graph (Fig. \@ref(fig:niche)) represents the clima
 <div class="regular">
 
 ```{r echo=FALSE, results='asis'}
-names(VarImp) <- c("GLM","GAM","RF","MaxE","ANN","mrank","rank")
+names(VarImp) <- c("GAM","RF","MaxE","ANN","mrank","rank")
 print(xtable(VarImp,align=c("l","l","l","l","l","l","l","l")), type="html")
 ```
 
