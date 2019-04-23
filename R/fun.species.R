@@ -42,6 +42,20 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
 
     ## Uncomplete data points
     wcomp <- which(complete.cases(data.xy))
+    
+    if(grepl("lemurs", taxon.names[sp])){
+      dir.create(paste0(spdir,"/IUCN"),recursive=TRUE,showWarnings=FALSE)
+      # Extract polygons with ogr2ogr
+      Input <- "D:/Data/Etudes/M2/Semestre_2/Stage_BiosceneMada_2019/Données/Madagascar/IUCN/TERRESTRIAL_MAMMALS.shp"
+      Output <- paste0(spdir,"/IUCN/",gsub(" ","_",spname),".shp")
+      Layer <- gsub(".shp", "",basename(Input))
+      Query <- paste0("binomial='",spname,"'")
+      ogr2ogr(Input,Output,Layer,overwrite=TRUE,where=Query,verbose=TRUE)
+      iucn_range <- raster::shapefile(Output)
+      iucn_range <- spTransform(iucn_range, crs(s))
+    }else{
+      iucn_range <- NULL
+    }
   } else {wcomp <- numeric(0)}
 
 
@@ -88,7 +102,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
 
   if (run.plots & !all(is.na(cell.pres))) {
 
-    fun.plot(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biomod[[1]],Biomod[[2]],fut.var,npix,environ,s,out.type)
+    fun.plot(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biomod[[1]],Biomod[[2]],fut.var,npix,environ,s,out.type,iucn_range)
 
   }
 
