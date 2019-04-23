@@ -47,13 +47,28 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
   if(enough){
     ## Committee averaging
     # Legend specifications
-    breakpoints <- c(-100,100,300,500,700,900,1100)
-    colors <- c(grey(c(0.95,0.75,0.55)),"#568203","#2B5911","#013220")
-    a.arg <- list(at=seq(0,1000,length.out=6), labels=c("0","1","2","3","4","5"),cex.axis=1.5)
+    nbCategory <- length(grep("_Full_", BiomodModel@models.computed))+1 ##Adding +1 for zeros
+    breakpoints <- seq(-100, 1100, 1200/nbCategory)
+    # colors <- c(grey(c(0.95,0.75,0.55)),"#568203","#2B5911","#013220")
+    colors <- c(grey(seq(0.95,0.55, length.out=floor(nbCategory/2))),colorRampPalette(c("#568203", "#013220"))(ceiling(nbCategory/2)))
+    # a.arg <- list(at=seq(0,1000,length.out=6), labels=c("0","1","2","3","4","5"),cex.axis=1.5)
+    a.arg <- list(at=seq(0,1000,length.out=nbCategory), labels=seq(0, nbCategory-1, 1),cex.axis=1.5)
     l.arg <- list(text="Vote",side=2, line=0.5, cex=2.5)
     # Load data
     pred <- stack(paste0(spdir,"/proj_current/proj_current_",spdir,"_ensemble.grd"))
     ca <- pred[[1]]
+    
+    #Not used in the atlas, adding presence over current niche to assess model quality
+    if((out.type=="html")||(out.type=="both")){
+      png(paste0(path,"/ca_current&points.png"),width=650,height=1000)
+      par(mar=c(0,0,0,r.mar),cex=1.4)
+      plot(ca,col=colors,breaks=breakpoints,ext=e.map,
+           legend.width=1.5,legend.shrink=0.6,legend.mar=7,
+           axis.args=a.arg,legend.arg=l.arg,
+           axes=FALSE, box=FALSE, zlim=c(0,1000))
+      if (length(wcomp)>=1){plot(p,pch=1,add=TRUE,cex=3, col="red")}
+      dev.off()
+    }
     
     # Plot
     if((out.type=="html")||(out.type=="both")){
@@ -75,8 +90,11 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
       dev.off()
     }
 
+    ## Value used to consider a cell as favorable for the species
+    treshold <- as.numeric(names(table(values(ca)))[floor(nbCategory/2)+1])
+    
     ## Present species distribution area (km2)
-    SDA.pres <- sum(values(ca)>=500,na.rm=TRUE) # Just the sum because one pixel is 1km2.
+    SDA.pres <- sum(values(ca)>=treshold,na.rm=TRUE) # Just the sum because one pixel is 1km2.
 
     ## Colors definition
     gcolors <- colorRampPalette(c("#568203","#013220"))
@@ -85,7 +103,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     ## Ecological niche
 
     ## 95% quantiles for alt, temp, prec, tseas, cwd
-    wC <- which(values(ca)>=500)
+    wC <- which(values(ca)>=treshold)
     niche.df <- as.data.frame(values(s))[wC,]
     niche.df$alt <- environ$alt[wC]
     Mean <- round(apply(niche.df,2,mean,na.rm=TRUE))
@@ -130,12 +148,12 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     ObsData[is.na(ObsData)] <- 0
     caData <- values(ca)[cellFromXY(ca,xy=BiomodData@coord)]
     PredData <- rep(0,length(caData))
-    PredData[caData>=500] <- 1
+    PredData[caData>=treshold] <- 1
     # Committee averaging performance
     Index <- c("ROC","ACCURACY","TSS","KAPPA")
     Perf.ca <- data.frame(ROC=NA,OA=NA,TSS=NA,K=NA,Sen=NA,Spe=NA)
     for (ind in 1:length(Index)) {
-        v <- Find.Optim.Stat(Stat=Index[ind],Fit=caData,Obs=ObsData,Fixed.thresh=499) # ! here vote ca > 499: three models at least
+        v <- Find.Optim.Stat(Stat=Index[ind],Fit=caData,Obs=ObsData,Fixed.thresh=treshold-1) # ! here vote ca > 499: three models at least
       Perf.ca[,ind] <- v[1]
     }
     Perf.ca$Sen <- v[3]
@@ -168,12 +186,16 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
           pred.f <- stack(paste0(spdir,name.f,name.f,"_",spdir,"_ensemble.grd"))
           caS <- addLayer(caS,pred.f[[1]])
         }
+        
+        # Compute number of possible outcome
+        nbCategoryFuture <- (nbCategory-1)*length(fut.var[[1]])+1
         # Compute sum
         caFut <- sum(caS)
         # Legend
-        breakpoints <- seq(-100,3100,by=200)
-        colors <- c(grey(c(seq(0.90,0.55,-0.05))),gcolors(8))
-        a.arg <- list(at=seq(0,3000,length.out=16), labels=c(0:15), cex.axis=1.5)
+        # breakpoints <- seq(-100,3100,by=200)
+        breakpoints <- seq(-100,3100,3200/nbCategoryFuture)
+        colors <-  c(grey(seq(0.95,0.55, length.out=floor(nbCategoryFuture/2))),colorRampPalette(c("#568203", "#013220"))(ceiling(nbCategoryFuture/2)))
+        a.arg <- list(at=seq(0,3000,length.out=nbCategoryFuture), labels=seq(0, nbCategoryFuture-1, 1), cex.axis=1.5)
         l.arg <- list(text="Vote",side=2, line=0.5, cex=2.5)
         # Plot (Committee Averaging Full Dispersal)
         if((out.type=="html")||(out.type=="both")){
@@ -197,7 +219,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
 
         # Zero-dispersal
         caZD <- caFut
-        values(caZD)[values(ca)<500] <- 0 # !! Here <600: three models at least for a presence
+        values(caZD)[values(ca)<treshold] <- 0 # !! Here <treshold: three models at least for a presence
         if((out.type=="html")||(out.type=="both")){
           png(paste0(path,"/cazd_",fut.var[[2]][j],"_",fut.var[[3]][l],".png"),width=650,height=1000)
           par(mar=c(0,0,0,r.mar),cex=1.4)
@@ -216,23 +238,25 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
                axes=FALSE,box=FALSE,zlim=c(0,3000))
           dev.off()
         }
+        #Value used to consider a cell as favorable for the species in the future
+        tresholdFuture <- as.numeric(names(table(values(caFut)))[floor(nbCategoryFuture/2)+1])
         # SDA (in km2)
-        SDA.fut$area.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] <- sum(values(caFut)>1500,na.rm=TRUE) # !! Here >1500
-        SDA.fut$area.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] <- sum(values(caZD)>1500,na.rm=TRUE) # !! Same here
+        SDA.fut$area.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] <- sum(values(caFut)>=tresholdFuture,na.rm=TRUE) # !! Here >1500
+        SDA.fut$area.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] <- sum(values(caZD)>=tresholdFuture,na.rm=TRUE) # !! Same here
         # Altitude
         # fd
         if (SDA.fut$area.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] !=0) {
-          Alt.fut$mean.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] <- mean(values(environ$alt)[values(caFut)>1500],na.rm=TRUE)
-          Alt.fut$q1.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] <- quantile(values(environ$alt)[values(caFut)>1500],0.025,na.rm=TRUE)
-          Alt.fut$q2.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] <- quantile(values(environ$alt)[values(caFut)>1500],0.975,na.rm=TRUE)
+          Alt.fut$mean.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] <- mean(values(environ$alt)[values(caFut)>=tresholdFuture],na.rm=TRUE)
+          Alt.fut$q1.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] <- quantile(values(environ$alt)[values(caFut)>=tresholdFuture],0.025,na.rm=TRUE)
+          Alt.fut$q2.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] <- quantile(values(environ$alt)[values(caFut)>=tresholdFuture],0.975,na.rm=TRUE)
           # round
           Alt.fut[,7:9] <- round(Alt.fut[,7:9])
         }
         # zd
         if (SDA.fut$area.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] !=0) {
-          Alt.fut$mean.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] <- mean(values(environ$alt)[values(caZD)>1500],na.rm=TRUE)
-          Alt.fut$q1.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] <- quantile(values(environ$alt)[values(caZD)>1500],0.025,na.rm=TRUE)
-          Alt.fut$q2.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] <- quantile(values(environ$alt)[values(caZD)>1500],0.975,na.rm=TRUE)
+          Alt.fut$mean.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] <- mean(values(environ$alt)[values(caZD)>=tresholdFuture],na.rm=TRUE)
+          Alt.fut$q1.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] <- quantile(values(environ$alt)[values(caZD)>=tresholdFuture],0.025,na.rm=TRUE)
+          Alt.fut$q2.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] <- quantile(values(environ$alt)[values(caZD)>=tresholdFuture],0.975,na.rm=TRUE)
           # round
           Alt.fut[,7:9] <- round(Alt.fut[,7:9])
         }

@@ -26,13 +26,16 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
     grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
     dev.off()
   } else {
-    if ("IUCN" %in% eolid.df$source) {
+    if ("EOL Dynamic Hierarchy" %in% eolid.df$source) {
+      eol.id <- eolid.df %>% filter(source=="EOL Dynamic Hierarchy") %>% pull(eolid) %>% first()
+      eolpage.id <- eolid.df %>% filter(source=="EOL Dynamic Hierarchy") %>% pull(pageid) %>% first()
+    } else if ("IUCN" %in% eolid.df$source) {
       eol.id <- eolid.df %>% filter(source=="IUCN") %>% pull(eolid) %>% first()
       eolpage.id <- eolid.df %>% filter(source=="IUCN") %>% pull(pageid) %>% first()
     } else if ("NCBI" %in% eolid.df$source) {
       eol.id <- eolid.df %>% filter(source=="NCBI") %>% pull(eolid) %>% first()
       eolpage.id <- eolid.df %>% filter(source=="NCBI") %>% pull(pageid) %>% first()
-    } else {
+    } else  {
       eol.id <- eolid.df %>% pull(eolid) %>% first()
       eolpage.id <- eolid.df %>% pull(pageid) %>% first()
     }
@@ -68,7 +71,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
 
     ## Encyclopedia Of Life (EOL)
     # Text
-    text.id <- eol_pages(eolpage.id,texts_page=1,vetted=2)$dataobj
+    text.id <- eol_pages(eolpage.id,texts_page=1,vetted=2, detail=T)$data_objects
     if(is.data.frame(text.id)){
       curl::curl_download(url=paste0("eol.org/data_objects/",text.id$dataobjectversionid),destfile=paste0(path,"/text.html"))
       # Convert HTML to text
@@ -96,7 +99,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
     }
 
     # Image
-    img.id <- eol_pages(eolpage.id,images_page=1,vetted=2)$dataobj
+    img.id <- eol_pages(eolpage.id,images_per_page=10,vetted=2)$data_objects
     if(is.data.frame(img.id)){
       curl::curl_download(url=paste0("eol.org/data_objects/",img.id$dataobjectversionid),destfile=paste0(path,"/img.html"))
       # Taking the lines of the HTML file

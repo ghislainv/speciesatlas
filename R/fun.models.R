@@ -56,29 +56,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                  rescal.all.models=TRUE,
                                  do.full.models=TRUE,
                                  modeling.id="5mod") ## 5 statistical models
-  
-  # ## Removing models not converging 
-  # good_models <- models_used
-  # warn = grep("not converge|fit", capture.output(warnings()))
-  # if (length(warn)>0){
-  #   if (grepl("glm", warn)==T){good_models<-good_models[!grepl("GLM", good_models)]}
-  #   if (grepl("gam", warn)==T){good_models<-good_models[!grepl("GAM", good_models)]}
-  # }
-  # 
-  # ## If some models didn't worked we try again without them
-  # if (length(good_models)!= length(models_used)){
-  #   BiomodModel <- BIOMOD_Modeling(BiomodData,
-  #                                  models=good_models,
-  #                                  models.options=BiomodOptions,
-  #                                  NbRunEval=1,
-  #                                  DataSplit=70,
-  #                                  VarImport=3,
-  #                                  models.eval.meth=c("KAPPA","TSS","ROC"),
-  #                                  rescal.all.models=TRUE,
-  #                                  do.full.models=TRUE,
-  #                                  modeling.id="5mod") ## 5 statistical models
-  # }
-  
+
   ## Building ensemble-models
   BiomodEM <- BIOMOD_EnsembleModeling(modeling.output=BiomodModel,
                                       chosen.models= grep("_Full_",
