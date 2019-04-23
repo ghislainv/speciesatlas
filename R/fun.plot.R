@@ -27,6 +27,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
          legend.width=1.5,legend.shrink=0.6,legend.mar=7,
          axis.args=a.arg,legend.arg=l.arg,
          axes=FALSE,box=FALSE,zlim=c(0,3000))
+    plot(iucn_range, add=T, lwd=2)
     if (length(wcomp)>=1){plot(p,pch=1,add=TRUE,cex=3)}
     if (zoom) {rect(e.map[1],e.map[3],e.map[2],e.map[4],border="black",lwd=1.5)}
     dev.off()
@@ -38,6 +39,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
          legend.width=1.5,legend.shrink=0.6,legend.mar=7,
          axis.args=a.arg,legend.arg=l.arg,
          axes=FALSE,box=FALSE,zlim=c(0,3000))
+    plot(iucn_range, add=T, lwd=2)
     if (length(wcomp)>=1){plot(p,pch=1,add=TRUE,cex=3)}
     if (zoom) {rect(e.map[1],e.map[3],e.map[2],e.map[4],border="black",lwd=1.5)}
     dev.off()
