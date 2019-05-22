@@ -10,8 +10,8 @@
 # Plotting
 # ==================
 
-fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,BiomodModel,fut.var,npix,environ,s,out.type){
-  
+fun.plot <- function(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,BiomodModel,fut.var,npix,environ,s,out.type,iucn_range){
+
   ##=====================
   ## Current distribution
 
@@ -27,7 +27,6 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
          legend.width=1.5,legend.shrink=0.6,legend.mar=7,
          axis.args=a.arg,legend.arg=l.arg,
          axes=FALSE,box=FALSE,zlim=c(0,3000))
-    plot(iucn_range, add=T, lwd=2)
     if (length(wcomp)>=1){plot(p,pch=1,add=TRUE,cex=3)}
     if (zoom) {rect(e.map[1],e.map[3],e.map[2],e.map[4],border="black",lwd=1.5)}
     dev.off()
@@ -39,7 +38,6 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
          legend.width=1.5,legend.shrink=0.6,legend.mar=7,
          axis.args=a.arg,legend.arg=l.arg,
          axes=FALSE,box=FALSE,zlim=c(0,3000))
-    plot(iucn_range, add=T, lwd=2)
     if (length(wcomp)>=1){plot(p,pch=1,add=TRUE,cex=3)}
     if (zoom) {rect(e.map[1],e.map[3],e.map[2],e.map[4],border="black",lwd=1.5)}
     dev.off()
@@ -59,19 +57,20 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     # Load data
     pred <- stack(paste0(spdir,"/proj_current/proj_current_",spdir,"_ensemble.grd"))
     ca <- pred[[1]]
-    
+
     #Not used in the atlas, adding presence over current niche to assess model quality
-    if((out.type=="html")||(out.type=="both")){
-      png(paste0(path,"/ca_current&points.png"),width=650,height=1000)
-      par(mar=c(0,0,0,r.mar),cex=1.4)
-      plot(ca,col=colors,breaks=breakpoints,ext=e.map,
-           legend.width=1.5,legend.shrink=0.6,legend.mar=7,
-           axis.args=a.arg,legend.arg=l.arg,
-           axes=FALSE, box=FALSE, zlim=c(0,1000))
-      if (length(wcomp)>=1){plot(p,pch=1,add=TRUE,cex=3, col="red")}
-      dev.off()
-    }
-    
+    # if((out.type=="html")||(out.type=="both")){
+    #   png(paste0(path,"/ca_current&points.png"),width=650,height=1000)
+    #   par(mar=c(0,0,0,r.mar),cex=1.4)
+    #   plot(ca,col=colors,breaks=breakpoints,ext=e.map,
+    #        legend.width=1.5,legend.shrink=0.6,legend.mar=7,
+    #        axis.args=a.arg,legend.arg=l.arg,
+    #        axes=FALSE, box=FALSE, zlim=c(0,1000))
+    #   if (!is.null(iucn_range)){plot(iucn_range, add=T, lwd=2)}
+    #   if (length(wcomp)>=1){plot(p,pch=1,add=TRUE,cex=3, col="red")}
+    #   dev.off()
+    # }
+
     # Plot
     if((out.type=="html")||(out.type=="both")){
       png(paste0(path,"/ca_current.png"),width=650,height=1000)
@@ -80,6 +79,8 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
            legend.width=1.5,legend.shrink=0.6,legend.mar=7,
            axis.args=a.arg,legend.arg=l.arg,
            axes=FALSE, box=FALSE, zlim=c(0,1000))
+      if (!is.null(iucn_range)){plot(iucn_range, add=T, lwd=2)}
+      if (length(wcomp)>=1&zoom){plot(p,pch=1,add=TRUE,cex=3, col="brown")}
       dev.off()
     }
     if((out.type=="pdf")||(out.type=="both")){
@@ -89,12 +90,14 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
            legend.width=1.5,legend.shrink=0.6,legend.mar=7,
            axis.args=a.arg,legend.arg=l.arg,
            axes=FALSE, box=FALSE, zlim=c(0,1000))
+      if (!is.null(iucn_range)){plot(iucn_range, add=T, lwd=2)}
+      if (length(wcomp)>=1&zoom){plot(p,pch=1,add=TRUE,cex=3, col="brown")}
       dev.off()
     }
 
     ## Value used to consider a cell as favorable for the species
-    treshold <- as.numeric(names(table(values(ca)))[floor(nbCategory/2)+1])
-    
+    treshold <- seq(0,1000,length.out=nbCategory)[floor(nbCategory/2)+1]
+
     ## Present species distribution area (km2)
     SDA.pres <- sum(values(ca)>=treshold,na.rm=TRUE) # Just the sum because one pixel is 1km2.
 
@@ -118,8 +121,8 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     Samp <- if (nC>1000) {sample(wC,1000,replace=FALSE)} else {wC}
     mapmat.df <- as.data.frame(values(s))[Samp,]
     # Pseudo-absences
-    wAbs <- which(is.na(BiomodData@data.species))
-    Abs.df <- BiomodData@data.env.var[wAbs,]
+    wAbs <- BiomodData@coord[-c(1:length(p)),] #first lines are for presence points
+    Abs.df <- as.data.frame(extract(s,wAbs))
     # Plot MAP-MAT
     plotExtent<-ggplot_build(ggplot(Abs.df, aes(x=prec, y=temp)) + xlim(0,5000)+ylim(0,1000)+ stat_density2d())$data[[1]]
     map.mat <- ggplot(mapmat.df, aes(x=prec, y=temp)) + xlim(min(plotExtent$x),max(plotExtent$x))+ ylim(min(plotExtent$y), max(plotExtent$y))+
@@ -152,14 +155,14 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     PredData <- rep(0,length(caData))
     PredData[caData>=treshold] <- 1
     # Committee averaging performance
-    Index <- c("ROC","ACCURACY","TSS","KAPPA")
-    Perf.ca <- data.frame(ROC=NA,OA=NA,TSS=NA,K=NA,Sen=NA,Spe=NA)
+    Index <- c("ROC","ACCURACY","TSS")# Remove "Kappa"
+    Perf.ca <- data.frame(ROC=NA,OA=NA,TSS=NA)
     for (ind in 1:length(Index)) {
         v <- Find.Optim.Stat(Stat=Index[ind],Fit=caData,Obs=ObsData,Fixed.thresh=treshold-1) # ! here vote ca > 499: three models at least
       Perf.ca[,ind] <- v[1]
     }
-    Perf.ca$Sen <- v[3]
-    Perf.ca$Spe <- v[4]
+    # Perf.ca$Sen <- v[3]
+    # Perf.ca$Spe <- v[4]
 
     ## Variable importance
     VarImp <- as.data.frame(get_variables_importance(BiomodModel)[,,"Full","PA1"])
@@ -188,7 +191,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
           pred.f <- stack(paste0(spdir,name.f,name.f,"_",spdir,"_ensemble.grd"))
           caS <- addLayer(caS,pred.f[[1]])
         }
-        
+
         # Compute number of possible outcome
         nbCategoryFuture <- (nbCategory-1)*length(fut.var[[1]])+1
         # Compute sum
@@ -241,7 +244,7 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
           dev.off()
         }
         #Value used to consider a cell as favorable for the species in the future
-        tresholdFuture <- as.numeric(names(table(values(caFut)))[floor(nbCategoryFuture/2)+1])
+        tresholdFuture <- seq(0,1000*length(fut.var[[1]]),length.out=nbCategoryFuture)[floor(nbCategoryFuture/2)+1]
         # SDA (in km2)
         SDA.fut$area.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="full"] <- sum(values(caFut)>=tresholdFuture,na.rm=TRUE) # !! Here >1500
         SDA.fut$area.fut[SDA.fut$rcp==fut.var[[2]][j] & SDA.fut$yr==fut.var[[3]][l] & SDA.fut$disp=="zero"] <- sum(values(caZD)>=tresholdFuture,na.rm=TRUE) # !! Same here
@@ -273,5 +276,11 @@ fun.plot <- function(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,
     ##========================================
     ## Save objects to be loaded by knitr
     save(list=c("SDA.fut","Alt.fut","niche","Perf.ca","Perf.mods","VarImp","npix"),file=paste0(path,"/plotting.rda"))
+    ##========================================
+    ## Load objet for whole taxon
+    load(paste0("../figures/",name,"/plotting.rda"))
+    SDA.whole.fut <- rbind(SDA.whole.fut, cbind(spname,SDA.fut[6,c(1,5,6)]))
+    SDA.whole.fut <- rbind(SDA.whole.fut, cbind(spname,SDA.fut[8,c(1,5,6)]))
+    save(list=c("SDA.whole.fut"),file=paste0("../figures/",name,"/plotting.rda"))
   }
 }

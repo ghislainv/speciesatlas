@@ -52,13 +52,13 @@ cat(text.cut)
 {\large \textbf{Current distribution}}
 \vspace{0.20cm}
 
-\begin{minipage}{0.50\textwidth}
+\begin{minipage}{0.4\textwidth}
 \begin{tabular}{cc}
 \includegraphics[width=4cm]{\Sexpr{paste(path,"presence_alt.pdf",sep="/")}} &
 \includegraphics[width=4cm]{\Sexpr{paste(path,"ca_current.pdf",sep="/")}} \\
 \end{tabular}
 \end{minipage}%
-\begin{minipage}{0.45\textwidth}
+\begin{minipage}{0.30\textwidth}
 \small{\textbf{N. of observation used in the models}}\hfill
 
 \vspace{0.20cm}
@@ -95,25 +95,20 @@ if(nchar(SDA.char)>3){
 rownames(Perf.ca) <- c("Value")
 rws <- 0
 col <- "\\rowcolor[gray]{0.95}"
-print.xtable(xtable(Perf.ca,digits=2,align=c("c","c","c","c","c","c","c")),
+print.xtable(xtable(Perf.ca,digits=2,align=rep("c",length(Perf.ca)+1)),
              booktabs=TRUE,
              add.to.row=list(pos=as.list(rws),command=col),
              floating=FALSE)
 @
 }
 \end{minipage}
-
 %%===============
 %% Climatic niche
-
-\vspace{0.35cm}
-{\large \textbf{Climatic niche}}
-\vspace{0.15cm}
-
 \begin{minipage}{0.35\textwidth}
+% {\small \textbf{Climatic niche}}
 \includegraphics[width=5.5cm]{\Sexpr{paste(path,"map-mat.pdf",sep="/")}}
 \end{minipage}\hfill
-\begin{minipage}{0.55\textwidth}
+\begin{minipage}{0.4\textwidth}
 \small{\textbf{Climatic and altitudinal range}}\hfill
 \vspace{0.20cm}
 \footnotesize{
@@ -126,8 +121,9 @@ print.xtable(xtable(niche,digits=0,align=c("l",rep("r",length(niche)))),
              floating=FALSE)
 @
 }
-\vspace{0.45cm}
+\vspace{0.20cm}
 \small{\textbf{Variable importance}}\hfill
+
 \vspace{0.20cm}
 \footnotesize{
 <<results="asis">>=
@@ -142,16 +138,12 @@ print.xtable(xtable(VarImp,align=c("l",rep("r", length(VarImp)))),
              floating=FALSE)
 @
 }
-\end{minipage}
-
+\end{minipage}%
 %%================================
 %% Vulnerability to climate change
+\begin{minipage}{0.35\textwidth}
+{\small \textbf{Vulnerability to climate change}}
 
-\vspace{0.45cm}
-{\large \textbf{Vulnerability to climate change}}
-\vspace{0.20cm}
-
-\begin{minipage}{0.45\textwidth}
 \begin{tabular}{cc}
 \footnotesize{Full dispersal} & \footnotesize{Zero dispersal} \\
 \includegraphics[width=4cm]{\Sexpr{paste(path,"cafd_85_2080.pdf",sep="/")}} &
@@ -171,14 +163,20 @@ for(j in 1:length(df$Area)){
   if(nchar(df$Area[j])>3){
     for(i in 1:floor(nchar(df$Area[j])/3)){df$Area[j] <- paste0(substr(df$Area[j],1,nchar(df$Area[j])-4*i+1)," ",substr(df$Area[j],nchar(df$Area[j])-4*i+2,nchar(df$Area[j])))}
   }
-  if(nchar(df$Change[j])>3){
+  if(nchar(df$Change[j])>3&!grepl("-",df$Change[j])){
+      for(i in 1:floor(nchar(df$Change[j])/3)){df$Change[j] <- paste0(substr(df$Change[j],1,nchar(df$Change[j])-4*i+1)," ",substr(df$Change[j],nchar(df$Change[j])-4*i+2,nchar(df$Change[j])))}
+    }
+  if(nchar(df$Change[j])>4&grepl("-",df$Change[j])){
     for(i in 1:floor(nchar(df$Change[j])/3)){df$Change[j] <- paste0(substr(df$Change[j],1,nchar(df$Change[j])-4*i+1)," ",substr(df$Change[j],nchar(df$Change[j])-4*i+2,nchar(df$Change[j])))}
   }
 }
+df<-df[c(6,8),]
+df$Change <- as.character(df$Change)
+rownames(df)<-c(1,2)
 rws <- seq(1,(nrow(df)-1),by=2)
 col <- rep("\\rowcolor[gray]{0.95}", length(rws))
 print.xtable(xtable(df,align=c("r","r","r","r","r","r"),digits=0),
-             floating=FALSE,hline.after=c(-1,0,4,nrow(df)),
+             floating=FALSE,hline.after=c(-1,0,1,nrow(df)),
              booktabs=TRUE,
              add.to.row=list(pos=as.list(rws),command=col))
 @

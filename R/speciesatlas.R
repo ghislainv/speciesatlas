@@ -23,10 +23,10 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
   ##=======================
   ## Environmental data
   s <- stack(environ[[model.var]])
-  
+
   ##=======================
   ## Arrange occurences
-  SP <- fun.data(df.orig, proj4=crs(s))
+  SP <- fun.data(df.orig, proj4=crs(s),run.plots)
   df.sp <- SP[[1]]
   sp.names <- SP[[2]]
   sp.dir <- SP[[3]]
@@ -42,11 +42,12 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
   ## Package names for parallel computations
   pkg.names.clust <- c("rgdal","raster","biomod2","ggplot2","knitr","grid",
                        "xtable","magick","readbitmap","curl","htm2txt","dplyr","taxize",
-                       "foreach","doParallel","parallel","bookdown","sp")
+                       "foreach","doParallel","parallel","bookdown","sp","gdalUtils")
 
   ## Make a cluster with all possible cores
   if(n.core>detectCores()){n.core <- detectCores()-1}
-  clust <- makeCluster(n.core)
+  clust <- makeCluster(n.core,outfile="")
+  registerDoSEQ()
   ## Register the number of parallel workers (here all CPUs)
   registerDoParallel(clust)
   ## Return number of parallel workers

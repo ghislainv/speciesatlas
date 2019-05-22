@@ -11,17 +11,23 @@
 # ==================
 
 fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent.path){
-  
+
   if (length(p)<30){
     models_used <- c("GAM","RF","MAXENT.Phillips","ANN")
   }else{
     models_used <- c("GLM","GAM","RF","MAXENT.Phillips","ANN")
   }
-  
+
+  #Scaling and centering data
+  varEx <- s
+  scaledCentered <- scale(values(varEx))
+  values(varEx) <- scaledCentered
+  varEx <- stack(varEx)
+
   ## BIOMOD_FormatingData
   set.seed(1234) ## Reproducible pseudo-absences
   BiomodData <- BIOMOD_FormatingData(resp.var=p,
-                                     expl.var=s,
+                                     expl.var=varEx,
                                      resp.name=spname,
                                      PA.nb.rep=1,
                                      PA.nb.absences=10000,
@@ -53,7 +59,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                  DataSplit=70,
                                  VarImport=3,
                                  models.eval.meth=c("KAPPA","TSS","ROC"),
-                                 rescal.all.models=TRUE,
+                                 rescal.all.models=F,
                                  do.full.models=TRUE,
                                  modeling.id="5mod") ## 5 statistical models
 
@@ -74,7 +80,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
 
   ## BIOMOD_Projection == PRESENT == ## Individual model projection
   BiomodProj <- BIOMOD_Projection(modeling.output=BiomodModel,
-                                  new.env=s,
+                                  new.env=varEx,
                                   proj.name="current",
                                   selected.models=grep("_Full_",
                                                        get_built_models(BiomodModel),
@@ -103,8 +109,13 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
     for (l in 1:length(fut.var[[3]])) {
       for (mc in 1:length(fut.var[[1]])) {
         ## Projections by model
+        varEx <- future[[i.mod]][[mc]][[model.var]]
+        values(varEx) <- scale(values(varEx), center=attr(scaledCentered,"scaled:center"),
+                                                            scale=attr(scaledCentered,"scaled:scale"))
+        varEx <- stack(varEx)
+
         BiomodProjFuture <- BIOMOD_Projection(modeling.output=BiomodModel,
-                                              new.env=future[[i.mod]][[mc]][[model.var]],
+                                              new.env=varEx,
                                               proj.name=paste0(fut.var[[1]][mc],"_",fut.var[[2]][j],"_",fut.var[[3]][l]),
                                               selected.models=grep("_Full_",
                                                                    get_built_models(BiomodModel),

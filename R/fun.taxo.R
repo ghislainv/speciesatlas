@@ -60,7 +60,7 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
         matched_name <- tnrs_query$matchedname
         auth <- tnrs_query$authority
         authority <- ifelse(length(auth)==0,NA,auth)
-      }
+      } else(authority <- NA )
       if(!(is.na(authority))){
         tax.data$authority <- as.character(ifelse(matched_name==spname,iconv(iconv(authority,from="UTF-8",to="ASCII//TRANSLIT"),from="ASCII//TRANSLIT",to="UTF-8"),NA))
       }
@@ -69,71 +69,101 @@ fun.taxo <- function(path,name,spdir,spname,enough,npix){
     iucn.summary <- iucn_summary(spname)[[1]]
     tax.data$iucn <- ifelse(!is.na(iucn.summary[1]),as.character(iucn.summary$status),NA)
 
-    ## Encyclopedia Of Life (EOL)
-    # Text
-    text.id <- eol_pages(eolpage.id,texts_page=1,vetted=2, detail=T)$data_objects
-    if(is.data.frame(text.id)){
-      curl::curl_download(url=paste0("eol.org/data_objects/",text.id$dataobjectversionid),destfile=paste0(path,"/text.html"))
-      # Convert HTML to text
-      html <- htm2txt(iconv(iconv(readLines(paste0(path,"/text.html")),from="UTF-8",to="ASCII//TRANSLIT"),from="ASCII//TRANSLIT",to="UTF-8"))
-      i=1
-      while (nchar(html[i])<90) {
-        i=i+1
-      }
-      if((i<66)&(substr(html[i],1,1)!="?")){
-        text <- html[i]
-        # We select the complete sentences with less than 1000 symbols. We also add dots and link to eol page
-        id.pts <- unlist(gregexpr(pattern="\\.(\\s[[:upper:]]|$)",text))
-        id.cut <- ifelse(id.pts[1]==-1,1000,max(id.pts[id.pts<=1000]))
-        text.cut <- substring(text,1,id.cut)
-        if(!(is.na(text.cut))){
-          text.cut <- paste0(text.cut," $[\\dots]$"," http://eol.org/",eolpage.id)
-        } else {
-          text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
-        }
-      }else {
-        text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
-      }
+    #Text alternative
+    textFile <- paste0("../figures/",name,"/",spdir,"/desc.txt")
+    if(file.exists(textFile)){
+      text <- readChar(textFile, file.info(textFile)$size)
+      id.pts <- unlist(gregexpr(pattern="\\.(\\s[[:upper:]]|$)",text))
+      id.cut <- ifelse(id.pts[1]==-1,1000,max(id.pts[id.pts<=1000]))
+      text.cut <- substring(text,1,id.cut)
+      text.cut <- paste0(text.cut," $[\\dots]$"," https://lemursofmadagascar.com")
     } else {
       text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
     }
+    # Text
+    # text.id <- eol_pages(eolpage.id,texts_page=1,vetted=2, detail=T)$data_objects
+    # if(is.data.frame(text.id)){
+    #   curl::curl_download(url=paste0("eol.org/data_objects/",text.id$dataobjectversionid),destfile=paste0(path,"/text.html"))
+    #   # Convert HTML to text
+    #   html <- htm2txt(iconv(iconv(readLines(paste0(path,"/text.html")),from="UTF-8",to="ASCII//TRANSLIT"),from="ASCII//TRANSLIT",to="UTF-8"))
+    #   i=1
+    #   while (nchar(html[i])<90) {
+    #     i=i+1
+    #   }
+    #   if((i<66)&(substr(html[i],1,1)!="?")){
+    #     text <- html[i]
+    #     # We select the complete sentences with less than 1000 symbols. We also add dots and link to eol page
+    #     id.pts <- unlist(gregexpr(pattern="\\.(\\s[[:upper:]]|$)",text))
+    #     id.cut <- ifelse(id.pts[1]==-1,1000,max(id.pts[id.pts<=1000]))
+    #     text.cut <- substring(text,1,id.cut)
+    #     if(!(is.na(text.cut))){
+    #       text.cut <- paste0(text.cut," $[\\dots]$"," http://eol.org/",eolpage.id)
+    #     } else {
+    #       text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
+    #     }
+    #   }else {
+    #     text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
+    #   }
+    # } else {
+    #   text.cut <- paste0("Description text was not found in the Encyclopedia of Life (EOL). More information on EOL's website at http://eol.org/",eolpage.id)
+    # }
 
-    # Image
-    img.id <- eol_pages(eolpage.id,images_per_page=10,vetted=2)$data_objects
-    if(is.data.frame(img.id)){
-      curl::curl_download(url=paste0("eol.org/data_objects/",img.id$dataobjectversionid),destfile=paste0(path,"/img.html"))
-      # Taking the lines of the HTML file
-      html <- readLines(paste0(path,"/img.html"))
-      i=1
-      while (substring(html[i],1,44)!="<meta content='http://media.eol.org/content/") {
-        i=i+1
-      }
-      # We select the url of the image
-      id.ext <- unlist(gregexpr(pattern="\\.jpg",html[i]))
-      img.url <- substring(html[i],16,id.ext+3)
-      HTTP <- tryCatch(curl::curl_download(url=img.url,destfile=paste0(path,"/image.jpg")),error = function(e){NA})
-      if(is.na(HTTP)){
-        jpeg(file=paste0(path,"/imagesquare.jpg"),width=100,height=100,units="px")
-        grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
-        dev.off()
+    #Image alternative
+
+    imgFile <- paste0("../figures/",name,"/",spdir,"/",gsub(" ","-",spname),".jpg")
+    if(file.exists(imgFile)){
+      img <- magick::image_read(imgFile)
+      img.bmp <- readbitmap::read.bitmap(imgFile)
+      h <- dim(img.bmp)[1]
+      w <- dim(img.bmp)[2]
+      if (w>=h) {
+        img.square <- magick::image_crop(img, paste0(h,"x",h,"+",(w-h)/2))
       } else {
-        img.path <- paste0(path,"/image.jpg")
-        img <- magick::image_read(img.path)
-        img.bmp <- readbitmap::read.bitmap(img.path)
-        h <- dim(img.bmp)[1]
-        w <- dim(img.bmp)[2]
-        if (w>=h) {
-          img.square <- magick::image_crop(img, paste0(h,"x",h,"+",(w-h)/2))
-        } else {
-          img.square <- magick::image_crop(img, paste0(w,"x",w,"+","0+",(h-w)/2))
-        }
-        magick::image_write(img.square,path=paste0(path,"/imagesquare.jpg"),format="jpg")
+        img.square <- magick::image_crop(img, paste0(w,"x",w,"+","0+",(h-w)/2))
       }
+      magick::image_write(img.square,path=paste0(path,"/imagesquare.jpg"),format="jpg")
     } else {
       jpeg(file=paste0(path,"/imagesquare.jpg"),width=100,height=100,units="px")
       grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
       dev.off()
     }
+
+    # # Image
+    # img.id <- eol_pages(eolpage.id,images_page=10,vetted=2)$data_objects
+    # if(is.data.frame(img.id)){
+    #   curl::curl_download(url=paste0("eol.org/data_objects/",img.id$dataobjectversionid),destfile=paste0(path,"/img.html"))
+    #   # Taking the lines of the HTML file
+    #   html <- readLines(paste0(path,"/img.html"))
+    #   i=1
+    #   while (substring(html[i],1,44)!="<meta content='http://media.eol.org/content/") {
+    #     i=i+1
+    #   }
+    #   # We select the url of the image
+    #   id.ext <- unlist(gregexpr(pattern="\\.jpg",html[i]))
+    #   img.url <- substring(html[i],16,id.ext+3)
+    #   HTTP <- tryCatch(curl::curl_download(url=img.url,destfile=paste0(path,"/image.jpg")),error = function(e){NA})
+    #   if(is.na(HTTP)){
+    #     jpeg(file=paste0(path,"/imagesquare.jpg"),width=100,height=100,units="px")
+    #     grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
+    #     dev.off()
+    #   } else {
+    #     img.path <- paste0(path,"/image.jpg")
+    #     img <- magick::image_read(img.path)
+    #     img.bmp <- readbitmap::read.bitmap(img.path)
+    #     h <- dim(img.bmp)[1]
+    #     w <- dim(img.bmp)[2]
+    #     if (w>=h) {
+    #       img.square <- magick::image_crop(img, paste0(h,"x",h,"+",(w-h)/2))
+    #     } else {
+    #       img.square <- magick::image_crop(img, paste0(w,"x",w,"+","0+",(h-w)/2))
+    #     }
+    #     magick::image_write(img.square,path=paste0(path,"/imagesquare.jpg"),format="jpg")
+    #   }
+    # } else {
+    #   jpeg(file=paste0(path,"/imagesquare.jpg"),width=100,height=100,units="px")
+    #   grid.raster(matrix(rep(grey(0.9),100), ncol=10),interpolate=FALSE)
+    #   dev.off()
+    # }
   }
 
   ##========================================

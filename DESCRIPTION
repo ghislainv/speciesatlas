@@ -29,7 +29,8 @@ Imports:
   parallel,
   bookdown,
   sp,
-  grid
+  grid,
+  gdalUtils
 Suggests:
   rmarkdown
 VignetteBuilder: knitr

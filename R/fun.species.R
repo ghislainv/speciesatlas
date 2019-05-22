@@ -42,20 +42,24 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
 
     ## Uncomplete data points
     wcomp <- which(complete.cases(data.xy))
-    
-    if(grepl("lemurs", taxon.names[sp])){
-      dir.create(paste0(spdir,"/IUCN"),recursive=TRUE,showWarnings=FALSE)
+
+    ## Adding IUCN range
+    if(grepl("lemurs", taxon.names[sp])&!file.exists(paste0(path,"/IUCN/",gsub(" ","_",spname),".shp"))){
+      dir.create(paste0(path,"/IUCN"),recursive=TRUE,showWarnings=FALSE)
       # Extract polygons with ogr2ogr
-      Input <- "D:/Data/Etudes/M2/Semestre_2/Stage_BiosceneMada_2019/Données/Madagascar/IUCN/TERRESTRIAL_MAMMALS.shp"
-      Output <- paste0(spdir,"/IUCN/",gsub(" ","_",spname),".shp")
+      Input <- "C:/Users/etcla/Documents/ANALYSE/Atlas_Corentin/atlas-run/data/shape/TERRESTRIAL_MAMMALS.shp"
+      Output <- paste0(path,"/IUCN/",gsub(" ","_",spname),".shp")
       Layer <- gsub(".shp", "",basename(Input))
       Query <- paste0("binomial='",spname,"'")
       ogr2ogr(Input,Output,Layer,overwrite=TRUE,where=Query,verbose=TRUE)
-      iucn_range <- raster::shapefile(Output)
-      iucn_range <- spTransform(iucn_range, crs(s))
-    }else{
-      iucn_range <- NULL
     }
+
+    iucn_range <- try(raster::shapefile(paste0(path,"/IUCN/",gsub(" ","_",spname),".shp")), silent=T)
+    if(is(iucn_range,"try-error")) {
+      iucn_range<-NULL
+      print(paste0(spname,": no features"))
+    }else {iucn_range <- spTransform(iucn_range, crs(s))}
+
   } else {wcomp <- numeric(0)}
 
 
@@ -63,7 +67,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
   if (length(wcomp)<=10){
     enough <- FALSE
     if (length(wcomp)>0){
-      p <- SpatialPoints(coords = Coords.presence)
+      p <- SpatialPoints(coords = Coords.presence[wcomp,,drop=F], proj4string=crs(s))
     }
     zoom <-FALSE
     npix<- length(wcomp)
@@ -102,7 +106,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
 
   if (run.plots & !all(is.na(cell.pres))) {
 
-    fun.plot(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biomod[[1]],Biomod[[2]],fut.var,npix,environ,s,out.type,iucn_range)
+    fun.plot(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData=Biomod[[1]],BiomodModel=Biomod[[2]],fut.var,npix,environ,s,out.type,iucn_range)
 
   }
 
@@ -114,6 +118,5 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
     fun.taxo(path,name,spdir,spname,enough,npix)
 
   }
-
   return(enough)
 }
