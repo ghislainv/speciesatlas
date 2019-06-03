@@ -39,8 +39,7 @@ fun.map <- function(sp.dir,ext,enough,taxon.names,taxon.sp,fut.var){
       } else { i <- i+1 }
     }
 
-    gcolors <- colorRampPalette(c("#F2F2F2",col[j]))
-    colors <- gcolors((max(values(total.taxon.present),na.rm=TRUE)+1))
+    colors <- c("#FFFFFF",colorRampPalette(c("khaki2","orange","red","black"))(max(values(total.taxon.present),na.rm=T)))
     breakpoints <- -0.5:(max(values(total.taxon.present),na.rm=TRUE)+0.5)
     a.arg <- list(at=c(0,max(values(total.taxon.present),na.rm=TRUE)), labels=as.character(c(0,max(values(total.taxon.present),na.rm=TRUE))),cex.axis=1.5)
     l.arg <- list(text="Number of species",side=2, line=0.5, cex=2.5)
