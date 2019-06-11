@@ -43,23 +43,6 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
     ## Uncomplete data points
     wcomp <- which(complete.cases(data.xy))
 
-    ## Adding IUCN range
-    if(grepl("lemurs", taxon.names[sp])&!file.exists(paste0(path,"/IUCN/",gsub(" ","_",spname),".shp"))){
-      dir.create(paste0(path,"/IUCN"),recursive=TRUE,showWarnings=FALSE)
-      # Extract polygons with ogr2ogr
-      Input <- "C:/Users/etcla/Documents/ANALYSE/Atlas_Corentin/atlas-run/data/shape/TERRESTRIAL_MAMMALS.shp"
-      Output <- paste0(path,"/IUCN/",gsub(" ","_",spname),".shp")
-      Layer <- gsub(".shp", "",basename(Input))
-      Query <- paste0("binomial='",spname,"'")
-      ogr2ogr(Input,Output,Layer,overwrite=TRUE,where=Query,verbose=TRUE)
-    }
-
-    iucn_range <- try(raster::shapefile(paste0(path,"/IUCN/",gsub(" ","_",spname),".shp")), silent=T)
-    if(is(iucn_range,"try-error")) {
-      iucn_range<-NULL
-      print(paste0(spname,": no features"))
-    }else {iucn_range <- spTransform(iucn_range, crs(s))}
-
   } else {wcomp <- numeric(0)}
 
 
