@@ -6,7 +6,7 @@
 # license         :GPLv3
 # ==============================================================================
 
-fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="html",title.book="Title",author.book="Author"){
+fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,model.var,environ,future,fut.var,n.core=(detectCores()-1),out.type="html",title.book="Title",author.book="Author"){
 
   # =======================
   # API Keys
@@ -39,6 +39,7 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
 
   ## For MAXENT.Phillips with JAVA to work on RStudio server
   Sys.unsetenv("DISPLAY")
+  maxent.path <- system.file("maxent", package="speciesatlas")
   ## Package names for parallel computations
   pkg.names.clust <- c("rgdal","raster","biomod2","ggplot2","knitr","grid",
                        "xtable","magick","readbitmap","curl","htm2txt","dplyr","taxize",
