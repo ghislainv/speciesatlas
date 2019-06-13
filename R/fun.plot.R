@@ -10,7 +10,7 @@
 # Plotting
 # ==================
 
-fun.plot <- function(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,BiomodModel,fut.var,npix,environ,s,out.type,iucn_range){
+fun.plot <- function(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData,BiomodModel,fut.var,npix,environ,s,out.type){
 
   ##=====================
   ## Current distribution
@@ -79,7 +79,6 @@ fun.plot <- function(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biom
            legend.width=1.5,legend.shrink=0.6,legend.mar=7,
            axis.args=a.arg,legend.arg=l.arg,
            axes=FALSE, box=FALSE, zlim=c(0,1000))
-      if (!is.null(iucn_range)){plot(iucn_range, add=T, lwd=2)}
       if (length(wcomp)>=1&zoom){plot(p,pch=1,add=TRUE,cex=3, col="brown")}
       dev.off()
     }
@@ -90,7 +89,6 @@ fun.plot <- function(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biom
            legend.width=1.5,legend.shrink=0.6,legend.mar=7,
            axis.args=a.arg,legend.arg=l.arg,
            axes=FALSE, box=FALSE, zlim=c(0,1000))
-      if (!is.null(iucn_range)){plot(iucn_range, add=T, lwd=2)}
       if (length(wcomp)>=1&zoom){plot(p,pch=1,add=TRUE,cex=3, col="brown")}
       dev.off()
     }

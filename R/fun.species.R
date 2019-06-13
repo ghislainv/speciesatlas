@@ -89,7 +89,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
 
   if (run.plots & !all(is.na(cell.pres))) {
 
-    fun.plot(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData=Biomod[[1]],BiomodModel=Biomod[[2]],fut.var,npix,environ,s,out.type,iucn_range)
+    fun.plot(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData=Biomod[[1]],BiomodModel=Biomod[[2]],fut.var,npix,environ,s,out.type)
 
   }
 
