@@ -10,7 +10,7 @@
 ## Data
 ##=======================
 
-fun.data <- function(df.orig,proj4,run.plots){
+fun.data <- function(df.orig,proj4,run.plots,model.var){
 
   df.sp <- vector("list",length(df.orig))
   sp.names <- NULL
@@ -34,11 +34,15 @@ fun.data <- function(df.orig,proj4,run.plots){
     taxon.names <- c(taxon.names,df.orig[[sp]]$Taxo.group)
     ## Figures directory
     dir.create(paste0("figures/",taxon.names[sp]),recursive=TRUE,showWarnings=FALSE)
+
     ## initializing empty rda for every taxon only if going to run plots
     if(run.plots){
       SDA.whole.fut <- data.frame(species=character(),area.pres=numeric(),area.fut=numeric(),perc.chang=numeric())
-      save(list=c("SDA.whole.fut"),file=paste0("figures/",taxon.names[sp],"/plotting.rda"))
+      variable.perf.taxon <- data.frame(sumPos=rep(0,length(model.var)),N.1=rep(0,length(model.var)), N.2=rep(0,length(model.var)), N.1.N=rep(0,length(model.var)), N.N=rep(0,length(model.var)))
+      rownames(variable.perf.taxon)<-model.var
+      save(list=c("SDA.whole.fut","variable.perf.taxon"),file=paste0("figures/",taxon.names[sp],"/plotting.rda"))
     }
+
   }
 
   dir.create("BIOMOD",recursive=TRUE,showWarnings=FALSE)

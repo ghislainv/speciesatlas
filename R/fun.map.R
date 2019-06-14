@@ -99,12 +99,22 @@ fun.map <- function(sp.dir,ext,enough,taxon.names,taxon.sp,fut.var){
         #
         chang.relatif <- raster(total.taxon)
         diff.absolue <- raster(total.taxon)
+        turnover <- raster(total.taxon)
 
         #Changement relatif au nb esp dans le présent:
         values(chang.relatif) <-((values(total.taxon)-values(total.taxon.present))/values(total.taxon.present))
 
         #Changement absolue:
         values(diff.absolue) <-abs((values(total.taxon)-values(total.taxon.present)))
+
+        #turn-over
+        spGained <- values(total.taxon-total.taxon.present)
+        spGained[spGained<0] <- 0
+
+        spLost <- values(total.taxon.present-total.taxon)
+        spLost[spLost<0] <- 0
+
+        values(turnover) <- (spGained+spLost)/(values(total.taxon.present)+spGained)
 
         colors <- c("#FFFFFF",colorRampPalette(c("khaki2","orange","red","black"))(max(values(total.taxon),na.rm=T)))
         breakpoints <- -0.5:(max(values(total.taxon),na.rm=T)+0.5)

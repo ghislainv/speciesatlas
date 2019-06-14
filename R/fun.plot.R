@@ -276,9 +276,20 @@ fun.plot <- function(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biom
     save(list=c("SDA.fut","Alt.fut","niche","Perf.ca","Perf.mods","VarImp","npix"),file=paste0(path,"/plotting.rda"))
     ##========================================
     ## Load objet for whole taxon
+    ## Load objet for whole taxon
     load(paste0("../figures/",name,"/plotting.rda"))
+
+    # SDA
     SDA.whole.fut <- rbind(SDA.whole.fut, cbind(spname,SDA.fut[6,c(1,5,6)]))
     SDA.whole.fut <- rbind(SDA.whole.fut, cbind(spname,SDA.fut[8,c(1,5,6)]))
-    save(list=c("SDA.whole.fut"),file=paste0("../figures/",name,"/plotting.rda"))
+
+    # STats on variables importance
+    variable.perf.taxon$sumPos <- variable.perf.taxon$sumPos + VarImp$rank
+    variable.perf.taxon$N.1[which(VarImp$rank==1)]<-variable.perf.taxon$N.1[which(VarImp$rank==1)]+1
+    variable.perf.taxon$N.2[which(VarImp$rank==2)]<-variable.perf.taxon$N.2[which(VarImp$rank==2)]+1
+    variable.perf.taxon$N.1.N[which(VarImp$rank==length(VarImp$rank)-1)]<-variable.perf.taxon$N.1.N[which(VarImp$rank==length(VarImp$rank)-1)]+1
+    variable.perf.taxon$N.N[which(VarImp$rank==length(VarImp$rank))]<-variable.perf.taxon$N.N[which(VarImp$rank==length(VarImp$rank))]+1
+
+    save(list=c("SDA.whole.fut","variable.perf.taxon"),file=paste0("../figures/",name,"/plotting.rda"))
   }
 }

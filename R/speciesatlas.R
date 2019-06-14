@@ -26,7 +26,7 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
 
   ##=======================
   ## Arrange occurences
-  SP <- fun.data(df.orig, proj4=crs(s),run.plots)
+  SP <- fun.data(df.orig,proj4=crs(s),run.plots,model.var)
   df.sp <- SP[[1]]
   sp.names <- SP[[2]]
   sp.dir <- SP[[3]]
@@ -60,7 +60,7 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
   setwd("..")
 
   if(run.map){
-    fun.map(sp.dir,extent(environ),enough,taxon.names,taxon.sp,fut.var)
+    fun.map(sp.dir,ext=extent(environ),enough,taxon.names,taxon.sp,fut.var)
   }
 
   if((out.type=="html")||(out.type=="both")){
