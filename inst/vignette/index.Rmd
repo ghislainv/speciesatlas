@@ -233,6 +233,20 @@ cat('\\pagebreak')
 
 # Results
 
+In the working directory, `speciesatlas` will create two new directories : 'BIOMOD' & 'figures.' The first one will store every model produced for each species. The second will store maps and informations about each taxonic group and their species. 
+
+For each species within the 'BIOMOD' folder, a new folder is created for every climatic model, scenario and time period combination. If the package is ran again, those files will be overwritten. 
+
+Map about current and future species' niche may be found in the figure directory. At the root, a folder is created for each taxonomic group and then for each species. They contain distribution map for every species according to the different combination previously selected. At the taxonomic group level, X new maps will also be created. 
+
+Those new map sums up different informations : 
+* Present species richness
+* Future speces richness (for the different combination)
+* Lost in species
+* Turn-Over
+
+
+
 # Atlas Outputs
 
 # References
