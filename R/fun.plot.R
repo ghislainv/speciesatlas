@@ -122,22 +122,22 @@ fun.plot <- function(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biom
     wAbs <- BiomodData@coord[-c(1:length(p)),] #first lines are for presence points
     Abs.df <- as.data.frame(extract(s,wAbs))
     # Plot MAP-MAT
-    plotExtent<-ggplot_build(ggplot(Abs.df, aes(x=prec, y=temp)) + xlim(0,5000)+ylim(0,1000)+ stat_density2d())$data[[1]]
-    map.mat <- ggplot(mapmat.df, aes(x=prec, y=temp)) + xlim(min(plotExtent$x),max(plotExtent$x))+ ylim(min(plotExtent$y), max(plotExtent$y))+
-      geom_density2d(data=Abs.df,col=grey(0.5)) +
-      geom_point(data=mapmat.df,col="darkgreen",alpha=1/3) +
-      labs(x="Annual precipitation (mm.y-1)",y=expression(paste("Mean annual temp. (",degree,"C x 10)")),size=4) +
-      theme(plot.margin=unit(c(0.5,1,1,0.5), "lines"),
-            axis.title.x=element_text(size=rel(3.6),margin=margin(t=15)),
-            axis.title.y=element_text(size=rel(3.6),margin=margin(r=15)),
-            axis.text.x=element_text(size=rel(3.6)),
-            axis.text.y=element_text(size=rel(3.6)))
-    if((out.type=="html")||(out.type=="both")){
-      ggsave(file=paste0(path,"/map-mat.png"),plot=map.mat,width=10,height=10)
-    }
-    if((out.type=="pdf")||(out.type=="both")){
-      ggsave(file=paste0(path,"/map-mat.pdf"),plot=map.mat,width=10,height=10)
-    }
+    # plotExtent<-ggplot_build(ggplot(Abs.df, aes(x=prec, y=temp)) + xlim(0,5000)+ylim(0,1000)+ stat_density2d())$data[[1]]
+    # map.mat <- ggplot(mapmat.df, aes(x=prec, y=temp)) + xlim(min(plotExtent$x),max(plotExtent$x))+ ylim(min(plotExtent$y), max(plotExtent$y))+
+    #   geom_density2d(data=Abs.df,col=grey(0.5)) +
+    #   geom_point(data=mapmat.df,col="darkgreen",alpha=1/3) +
+    #   labs(x="Annual precipitation (mm.y-1)",y=expression(paste("Mean annual temp. (",degree,"C x 10)")),size=4) +
+    #   theme(plot.margin=unit(c(0.5,1,1,0.5), "lines"),
+    #         axis.title.x=element_text(size=rel(3.6),margin=margin(t=15)),
+    #         axis.title.y=element_text(size=rel(3.6),margin=margin(r=15)),
+    #         axis.text.x=element_text(size=rel(3.6)),
+    #         axis.text.y=element_text(size=rel(3.6)))
+    # if((out.type=="html")||(out.type=="both")){
+    #   ggsave(file=paste0(path,"/map-mat.png"),plot=map.mat,width=10,height=10)
+    # }
+    # if((out.type=="pdf")||(out.type=="both")){
+    #   ggsave(file=paste0(path,"/map-mat.pdf"),plot=map.mat,width=10,height=10)
+    # }
 
     ##=================
     ## Table of results
@@ -290,6 +290,21 @@ fun.plot <- function(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biom
     variable.perf.taxon$N.1.N[which(VarImp$rank==length(VarImp$rank)-1)]<-variable.perf.taxon$N.1.N[which(VarImp$rank==length(VarImp$rank)-1)]+1
     variable.perf.taxon$N.N[which(VarImp$rank==length(VarImp$rank))]<-variable.perf.taxon$N.N[which(VarImp$rank==length(VarImp$rank))]+1
 
-    save(list=c("SDA.whole.fut","variable.perf.taxon"),file=paste0("../figures/",name,"/plotting.rda"))
+    #STats perf
+    Perf.mods <- get.Model.Perf(Perf.mods)
+    Perf.mods.TSS.Tot <- rbind(Perf.mods.TSS.Tot,Perf.mods[[1]])
+    Perf.mods.ROC.Tot <- rbind(Perf.mods.ROC.Tot,Perf.mods[[2]])
+
+    save(list=c("SDA.whole.fut","variable.perf.taxon","Perf.mods.TSS.Tot","Perf.mods.ROC.Tot"),file=paste0("../figures/",name,"/plotting.rda"))
   }
+}
+
+get.Model.Perf <- function(Perf.mods){
+  names(Perf.mods) <- c("wIndex","Index","Model","Run","PA","Value")
+  Perf.mods.test <- Perf.mods[Perf.mods$Index=="Testing.data"&Perf.mods$wIndex!="KAPPA",c(1,3,4,6)]
+  Perf.mods.TSS <- reshape(Perf.mods.test[Perf.mods.test$wIndex=="TSS",-1],
+                           timevar="Run", idvar="Model", direction="wide")
+  Perf.mods.ROC <- reshape(Perf.mods.test[Perf.mods.test$wIndex=="ROC",-1],
+                           timevar="Run", idvar="Model", direction="wide")
+  return(list(Perf.mods.TSS,Perf.mods.ROC))
 }

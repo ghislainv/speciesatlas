@@ -155,3 +155,4 @@ print(xtable(df,align=c("l","l","l","l","l","l"),digits=0), type="html")
 <div class="regular">
 -------------
 </div>
+cor

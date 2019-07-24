@@ -40,7 +40,9 @@ fun.data <- function(df.orig,proj4,run.plots,model.var){
       SDA.whole.fut <- data.frame(species=character(),area.pres=numeric(),area.fut=numeric(),perc.chang=numeric())
       variable.perf.taxon <- data.frame(sumPos=rep(0,length(model.var)),N.1=rep(0,length(model.var)), N.2=rep(0,length(model.var)), N.1.N=rep(0,length(model.var)), N.N=rep(0,length(model.var)))
       rownames(variable.perf.taxon)<-model.var
-      save(list=c("SDA.whole.fut","variable.perf.taxon"),file=paste0("figures/",taxon.names[sp],"/plotting.rda"))
+      Perf.mods.TSS.Tot <- data.frame(Model="character",Value.RUN1="numeric",Value.Full="numeric")
+      Perf.mods.ROC.Tot <- data.frame(Model="character",Value.RUN1="numeric",Value.Full="numeric")
+      save(list=c("SDA.whole.fut","variable.perf.taxon","Perf.mods.TSS.Tot","Perf.mods.ROC.Tot"),file=paste0("figures/",taxon.names[sp],"/plotting.rda"))
     }
 
   }

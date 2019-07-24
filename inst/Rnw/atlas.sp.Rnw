@@ -170,7 +170,7 @@ for(j in 1:length(df$Area)){
     for(i in 1:floor(nchar(df$Change[j])/3)){df$Change[j] <- paste0(substr(df$Change[j],1,nchar(df$Change[j])-4*i+1)," ",substr(df$Change[j],nchar(df$Change[j])-4*i+2,nchar(df$Change[j])))}
   }
 }
-df<-df[c(6,8),]
+df<-df[which(df$RCP=="85"&df$Year=="2080"),]
 df$Change <- as.character(df$Change)
 rownames(df)<-c(1,2)
 rws <- seq(1,(nrow(df)-1),by=2)
