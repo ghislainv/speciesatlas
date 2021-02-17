@@ -10,20 +10,32 @@
 # Modelling
 # ==================
 
-fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent.path){
-
+fun.models.run <- function(i,expl,data,maxent.path){
+  
+  name <- data[[i]]$`Taxon Name`
+  spdir <- data[[i]]$`Species Dir`
+  spname <- data[[i]]$`Species Name`
+  p <- data[[i]]$Data
+  
+  s <- expVar$`Current`
+  future <- expVar$Future
+  model.var <- expVar$model.var
+  fut.var <- expVar$fut.var
+  
+  dir.create(spdir,recursive=TRUE,showWarnings=FALSE)
+  
   if (length(p)<30){
     models_used <- c("GAM","RF","MAXENT.Phillips","ANN")
   }else{
     models_used <- c("GLM","GAM","RF","MAXENT.Phillips","ANN")
   }
-
+  
   #Scaling and centering data
   varEx <- s
   scaledCentered <- scale(values(varEx))
   values(varEx) <- scaledCentered
   varEx <- stack(varEx)
-
+  
   ## BIOMOD_FormatingData
   set.seed(1234) ## Reproducible pseudo-absences
   BiomodData <- BIOMOD_FormatingData(resp.var=p,
@@ -34,10 +46,10 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                      PA.strategy="random",
                                      na.rm=TRUE)
   saveRDS(BiomodData,paste0(spdir,"/BiomodData.rds"))
-
+  
   ## BIOMOD_ModelingOptions
   BiomodOptions <- BIOMOD_ModelingOptions(GLM=list(type="quadratic",interaction.level=0,myFormula=NULL,family=binomial(link="logit"),
-                                                    test="AIC",  control = glm.control(epsilon = 1e-08, maxit = 100, trace = F)),
+                                                   test="AIC",  control = glm.control(epsilon = 1e-08, maxit = 100, trace = F)),
                                           GAM=list(algo="GAM_mgcv",type="s_smoother",k=4,interaction.level=0,
                                                    myFormula=NULL,
                                                    family=binomial(link="logit")),
@@ -49,7 +61,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                                                product=FALSE, threshold=FALSE, hinge=FALSE),
                                           ANN=list(NbCV=5,size=NULL,decay=NULL,rang=0.1,maxit=200))
   saveRDS(BiomodOptions,paste0(spdir,"/BiomodOptions.rds"))
-
+  
   ## BIOMOD_Modeling
   set.seed(1234) ## Reproducible results
   BiomodModel <- BIOMOD_Modeling(BiomodData,
@@ -62,7 +74,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                  rescal.all.models=F,
                                  do.full.models=TRUE,
                                  modeling.id="5mod") ## 5 statistical models
-
+  
   ## Building ensemble-models
   BiomodEM <- BIOMOD_EnsembleModeling(modeling.output=BiomodModel,
                                       chosen.models= grep("_Full_",
@@ -77,7 +89,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                       committee.averaging=TRUE,
                                       prob.mean.weight=TRUE,
                                       prob.mean.weight.decay="proportional")
-
+  
   ## BIOMOD_Projection == PRESENT == ## Individual model projection
   BiomodProj <- BIOMOD_Projection(modeling.output=BiomodModel,
                                   new.env=varEx,
@@ -92,7 +104,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                   omi.na=TRUE,
                                   on_0_1000=TRUE,
                                   output.format=".grd")
-
+  
   ## BIOMOD_EnsembleForecasting == PRESENT == ## Ensemble forecasting
   BiomodEF <- BIOMOD_EnsembleForecasting(EM.output=BiomodEM, ## Rules for assembling
                                          projection.output=BiomodProj, ## Individual model projection
@@ -100,23 +112,23 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                          filtered.meth=c("TSS"),
                                          compress=TRUE,
                                          on_0_1000=TRUE)
-
+  
   ## Future distribution
-
+  
   i.mod <- 1
-
-  for (j in 1:length(fut.var[[2]])) {
-    for (l in 1:length(fut.var[[3]])) {
+  
+  for (j in 1:length(fut.var[[3]])) {
+    for (l in 1:length(fut.var[[2]])) {
       for (mc in 1:length(fut.var[[1]])) {
         ## Projections by model
         varEx <- future[[i.mod]][[mc]][[model.var]]
         values(varEx) <- scale(values(varEx), center=attr(scaledCentered,"scaled:center"),
-                                                            scale=attr(scaledCentered,"scaled:scale"))
+                               scale=attr(scaledCentered,"scaled:scale"))
         varEx <- stack(varEx)
-
+        
         BiomodProjFuture <- BIOMOD_Projection(modeling.output=BiomodModel,
                                               new.env=varEx,
-                                              proj.name=paste0(fut.var[[1]][mc],"_",fut.var[[2]][j],"_",fut.var[[3]][l]),
+                                              proj.name=paste0(fut.var[[3]][j],"_",fut.var[[2]][l],"_",fut.var[[1]][mc]),
                                               selected.models=grep("_Full_",
                                                                    get_built_models(BiomodModel),
                                                                    value=TRUE), ## Full models only
@@ -127,7 +139,7 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
                                               omi.na=TRUE,
                                               on_0_1000=TRUE,
                                               output.format=".grd")
-
+        
         ## BIOMOD_EnsembleForecasting == FUTURE == ## Ensemble forecasting
         BiomodEF_Future <- BIOMOD_EnsembleForecasting(EM.output=BiomodEM, ## Rules for assembling
                                                       projection.output=BiomodProjFuture, ## Individual model projection
@@ -139,29 +151,32 @@ fun.models.run <- function(name,spdir,p,s,spname,model.var,future,fut.var,maxent
       i.mod <- i.mod+1
     }
   }
-
-  return(list(BiomodData,BiomodModel))
+  
+  return(list("Species"=data[[i]]$`Species Name`,"BiomodData"=BiomodData,"BiomodModel"=BiomodModel))
 }
 
-fun.models.no.run <- function(name,spdir){
-
+fun.models.no.run <- function(i,data){
+  
+  name <- data[[i]]$`Species Names`
+  spdir <- data[[i]]$`Species Dir` 
+  
   ## BIOMOD_FormatingData
   BiomodData <- readRDS(paste0(spdir,"/BiomodData.rds"))
-
+  
   ## BIOMOD_ModelingOptions
   BiomodOptions <- readRDS(paste0(spdir,"/BiomodOptions.rds"))
-
+  
   ## BIOMOD_Modeling
   BiomodModel <- get(load(paste0(spdir,"/",spdir,".5mod.models.out")))
-
+  
   ## Building ensemble-models
   BiomodEM <- get(load(paste0(spdir,"/",spdir,".5modensemble.models.out")))
-
+  
   ## BIOMOD_Projection == PRESENT == ## Individual model projection
   BiomodProj <- get(load(paste0(spdir,"/proj_current/",spdir,".current.projection.out")))
-
+  
   ## BIOMOD_EnsembleForecasting == PRESENT == ## Ensemble forecasting
   BiomodEF <- get(load(paste0(spdir,"/proj_current/",spdir,".current.ensemble.projection.out")))
-
-  return(list(BiomodData,BiomodModel))
+  
+  return(list("Species"=data[[i]]$`Species Name`,"BiomodData"=BiomodData,"BiomodModel"=BiomodModel))
 }
