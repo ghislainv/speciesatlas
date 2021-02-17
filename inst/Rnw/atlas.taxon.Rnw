@@ -1,0 +1,123 @@
+%!/usr/bin/Rscript
+
+% ==============================================================================
+% authors         :Ghislain Vieilledent, Aurelien Colas
+% email           :ghislain.vieilledent@cirad.fr, aurelien.colas@insa-lyon.fr
+% license         :GPLv3
+% ==============================================================================
+
+%%=========================
+%% Load objects for species
+<<>>=
+path <- paste(user.path,"figures",name,sep="/")
+load(paste(path,"plotting.rda",sep="/"))
+@
+
+%%================================
+%% Vulnerability to climate change
+\begin{center}
+{\large \textbf{Species vulnerability to climate change - FULL}}
+
+\begin{minipage}{0.45\textwidth}
+\footnotesize{
+<<results="asis">>=
+names(SDA.whole.fut) <- c("Species","Current Area","Future Area","perc.change")
+df <- SDA.whole.fut
+df$perc.change <- as.numeric(df$perc.change)
+df$Change <- NA
+espDimin<-c(0,0)
+espDiminFort<-c(0,0)
+espAugment<-c(0,0)
+espExtinct <- c(0,0)
+for(k in 1:2){
+  select <- seq(k,nrow(df),by=2)
+  for(j in select){
+    if(df[j,4]<0 & df[j,4]> -25){
+      df$Change[j] <- paste("{\\color{red!50!yellow}", df$perc.change[j],"\\%","}")
+      espDimin[k]=espDimin[k]+1
+    }else if(df[j,4]<= -25 & df[j,4]> -100){
+      df$Change[j] <- paste("{\\color{red}", df$perc.change[j],"\\%","}")
+      espDiminFort[k]=espDiminFort[k]+1
+    }else if(df[j,4]== -100){
+      df$Change[j] <- paste("{\\color{red!50!black}", df$perc.change[j],"\\%","}")
+      espExtinct[k]=espExtinct[k]+1
+    }else if (df[j,4]>0){
+      df$Change[j] <- paste("{\\color{green!60!black}", df$perc.change[j],"\\%","}")
+      espAugment[k]=espAugment[k]+1
+    } else {
+      df$Change[j] <- paste(df$perc.change[j],"\\%")
+    }
+
+    if(nchar(df[j,2])>3){
+      for(i in 1:floor(nchar(df[j,2])/2)){df[j,2] <- paste0(substr(df[j,2],1,nchar(df[j,2])-4*i+1)," ",substr(df[j,2],nchar(df[j,2])-4*i+2,nchar(df[j,2])))}
+    }
+    if(nchar(df[j,3])>3){
+      for(i in 1:floor(nchar(df[j,3])/3)){df[j,3] <- paste0(substr(df[j,3],1,nchar(df[j,3])-4*i+1)," ",substr(df[j,3],nchar(df[j,3])-4*i+2,nchar(df[j,3])))}
+    }
+    if(nchar(df[j,4])>3&!grepl("-",df[j,4])){
+      for(i in 1:floor(nchar(df[j,4])/3)){df[j,4] <- paste0(substr(df[j,4],1,nchar(df[j,4])-4*i+1)," ",substr(df[j,4],nchar(df[j,4])-4*i+2,nchar(df[j,4])))}
+    }
+    if(nchar(df[j,4])>4&grepl("-",df[j,4])){
+      for(i in 1:floor(nchar(df[j,4])/3)){df[j,4] <- paste0(substr(df[j,4],1,nchar(df[j,4])-4*i+1)," ",substr(df[j,4],nchar(df[j,4])-4*i+2,nchar(df[j,4])))}
+    }
+  }
+}
+rws <- seq(1,(nrow(df)-1),by=2)
+dfFull <-df[rws,-4]
+rownames(dfFull) <- c(1:dim(dfFull)[1])
+rws <- seq(1,(nrow(dfFull)-1),by=2)
+col <- rep("\\rowcolor[gray]{0.95}", length(rws))
+print.xtable(xtable(dfFull,align=rep("r",length(dfFull)+1)),
+             floating=FALSE,
+             booktabs=TRUE,
+             add.to.row=list(pos=as.list(rws),command=col),
+             sanitize.text.function = function(x){x},
+             scalebox=0.7)
+@
+}
+\vspace{0.45cm}
+
+\begin{minipage}{0.40\textwidth}
+{\small \textbf{Positive change :}}
+\Sexpr{espAugment[1]}
+
+{\small \textbf{Negative change :}}
+\Sexpr{espDimin[1]+espDiminFort[1]}
+
+{\small \textbf{Extinct :}}
+\Sexpr{espExtinct[1]}
+\end{minipage}
+
+\end{minipage}
+
+\vspace{0.45cm}
+{\large \textbf{Species vulnerability to climate change - ZERO}}
+
+\vspace{0.20cm}
+\begin{minipage}{0.45\textwidth}
+\footnotesize{
+<<results="asis">>=
+rws <- seq(2,(nrow(df)),by=2)
+dfFull <-df[rws,-4]
+rownames(dfFull) <- c(1:dim(dfFull)[1])
+rws <- seq(1,(nrow(dfFull)-1),by=2)
+col <- rep("\\rowcolor[gray]{0.95}", length(rws))
+print.xtable(xtable(dfFull,align=rep("r",length(dfFull)+1)),
+             floating=FALSE,
+             booktabs=TRUE,
+             add.to.row=list(pos=as.list(rws),command=col),
+             sanitize.text.function = function(x){x},
+             scalebox=0.7)
+@
+}
+\vspace{0.45cm}
+\begin{minipage}{0.40\textwidth}
+{\small \textbf{Extinct :}}\Sexpr{espExtinct[2]}
+
+{\small \textbf{Big reduction :}}\Sexpr{espDiminFort[2]}
+
+{\small \textbf{Small reduction :}}\Sexpr{espDimin[2]}
+\end{minipage}
+
+\end{minipage}
+\end{center}

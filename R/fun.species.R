@@ -27,7 +27,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
   ## Remove duplicates
   cell.pres <- cellFromXY(s,df.tsp)
 
-  if(!(is.na(cell.pres))){
+  if(!all(is.na(cell.pres))){
     ## Spatial points at center of each raster cell with presences
     list.cell.pres <- sort(unique(cell.pres))
     cell.pres.sp <- xyFromCell(s,list.cell.pres,spatial=TRUE)
@@ -42,6 +42,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
 
     ## Uncomplete data points
     wcomp <- which(complete.cases(data.xy))
+
   } else {wcomp <- numeric(0)}
 
 
@@ -49,7 +50,7 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
   if (length(wcomp)<=10){
     enough <- FALSE
     if (length(wcomp)>0){
-      p <- SpatialPoints(coords = Coords.presence)
+      p <- SpatialPoints(coords = Coords.presence[wcomp,,drop=F], proj4string=crs(s))
     }
     zoom <-FALSE
     npix<- length(wcomp)
@@ -57,8 +58,8 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
   }else{
     ## Transform as a SpatialPointsDataFrame and SpatialPoints (for presence only)
     d <- SpatialPointsDataFrame(coords=Coords.presence[wcomp,], data=data.xy[wcomp,],
-                                proj4string=CRS("+init=epsg:32738"))
-    p <- SpatialPoints(d) ## This is used for presence-only data
+                                proj4string=crs(s))
+    p <- SpatialPoints(d, proj4string=crs(d)) ## This is used for presence-only data
 
 
 
@@ -86,9 +87,9 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
   ##===================================================
   ## Plotting
 
-  if (run.plots) {
+  if (run.plots & !all(is.na(cell.pres))) {
 
-    fun.plot(path,name,spdir,wcomp,p,zoom,enough,r.mar,e.map,Biomod[[1]],Biomod[[2]],fut.var,npix,environ,s,out.type)
+    fun.plot(path,name,spname,spdir,wcomp,p,zoom,enough,r.mar,e.map,BiomodData=Biomod[[1]],BiomodModel=Biomod[[2]],fut.var,npix,environ,s,out.type)
 
   }
 
@@ -100,6 +101,5 @@ fun.species <- function(i,run.models,run.plots,run.taxo,model.var,environ,future
     fun.taxo(path,name,spdir,spname,enough,npix)
 
   }
-
   return(enough)
 }

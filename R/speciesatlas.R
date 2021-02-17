@@ -6,7 +6,7 @@
 # license         :GPLv3
 # ==============================================================================
 
-fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,model.var,environ,future,fut.var,maxent.path,n.core=(detectCores()-1),out.type="html",title.book="Title",author.book="Author"){
+fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.map=TRUE,model.var,environ,future,fut.var,n.core=(detectCores()-1),out.type="html",title.book="Title",author.book="Author"){
 
   # =======================
   # API Keys
@@ -20,7 +20,13 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
   ncbi.key <- getkey(service="entrez")
   check_APIkeys <- c(eol.key,tropicos.key,iucn.key,ncbi.key)
 
-  SP <- fun.data(df.orig)
+  ##=======================
+  ## Environmental data
+  s <- stack(environ[[model.var]])
+
+  ##=======================
+  ## Arrange occurences
+  SP <- fun.data(df.orig,proj4=crs(s),run.plots,model.var)
   df.sp <- SP[[1]]
   sp.names <- SP[[2]]
   sp.dir <- SP[[3]]
@@ -28,23 +34,21 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
   taxon.names <- SP[[5]]
 
   ##=======================
-  ## Environmental data
-  s <- stack(environ[[model.var]])
-
-  ##=======================
   ## Parallel computations
   ##=======================
 
   ## For MAXENT.Phillips with JAVA to work on RStudio server
   Sys.unsetenv("DISPLAY")
+  maxent.path <- system.file("maxent", package="speciesatlas")
   ## Package names for parallel computations
   pkg.names.clust <- c("rgdal","raster","biomod2","ggplot2","knitr","grid",
                        "xtable","magick","readbitmap","curl","htm2txt","dplyr","taxize",
-                       "foreach","doParallel","parallel","bookdown","sp")
+                       "foreach","doParallel","parallel","bookdown","sp","gdalUtils")
 
   ## Make a cluster with all possible cores
   if(n.core>detectCores()){n.core <- detectCores()-1}
-  clust <- makeCluster(n.core)
+  clust <- makeCluster(n.core,outfile="")
+  registerDoSEQ()
   ## Register the number of parallel workers (here all CPUs)
   registerDoParallel(clust)
   ## Return number of parallel workers
@@ -56,7 +60,7 @@ fun.main <- function(df.orig,run.models=TRUE,run.plots=TRUE,run.taxo=TRUE,run.ma
   setwd("..")
 
   if(run.map){
-    fun.map(sp.dir,extent(environ),enough,taxon.names,taxon.sp,fut.var)
+    fun.map(sp.dir,ext=extent(environ),enough,taxon.names,taxon.sp,fut.var)
   }
 
   if((out.type=="html")||(out.type=="both")){

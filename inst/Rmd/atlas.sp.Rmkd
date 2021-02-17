@@ -71,7 +71,7 @@ SDA = `r SDA.char` km$^2$
 **Model performance**
 ```{r echo=FALSE, results='asis', out.width = "95%"}
 rownames(Perf.ca) <- c("Value")
-print(xtable(Perf.ca,digits=2,align=c("l","l","l","l","l","l","l")), type="html")
+print(xtable(Perf.ca,digits=2,align=rep("c",length(Perf.ca)+1)), type="html")
 ```
 </div>
 
@@ -99,8 +99,9 @@ print(xtable(niche,digits=0,align=rep("l",length(niche)+1)), type="html")
 <div class="regular">
 **Variable importance**
 ```{r echo=FALSE, results='asis'}
-names(VarImp) <- c("GLM","GAM","RF","MaxE","ANN","mrank","rank")
-print(xtable(VarImp,align=c("l","l","l","l","l","l","l","l")), type="html")
+names(VarImp)[names(VarImp) == "MAXENT.Phillips"] <- 'MaxE'
+names(VarImp)[names(VarImp) == 'mean.rank'] <- 'mrank'
+print(xtable(VarImp,align=rep("l", length(VarImp)+1)), type="html")
 ```
 </div>
 
@@ -154,3 +155,4 @@ print(xtable(df,align=c("l","l","l","l","l","l"),digits=0), type="html")
 <div class="regular">
 -------------
 </div>
+cor
